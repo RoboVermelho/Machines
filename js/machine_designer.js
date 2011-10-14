@@ -2,6 +2,9 @@ function MachineDesigner(paper,lista_estados,lista_funcoes)  {
 	this.paper = paper;
 	this.lista_estados = lista_estados;
 	this.lista_funcoes = lista_funcoes;
+	this._ident = 'nome';
+	this._final = '_final';
+	this._init = '_init';
 }
 
 MachineDesigner.prototype.drawMachine = function()  {
@@ -11,6 +14,9 @@ MachineDesigner.prototype.drawMachine = function()  {
 	var funcoes = this.lista_funcoes;
 	var position = { x : 60, y : 60 };
 	var size = lista_estados.length;
+	var _ident = this._ident;
+	var _final = this._final;
+	var _init = this._init
 	Joint.resetPaper();
 	Joint.paper(paper.id,paper.width, paper.heigth);
 	var fsa = Joint.dia.fsa;
@@ -21,10 +27,11 @@ MachineDesigner.prototype.drawMachine = function()  {
 	for (var ct = 0; ct < lista_estados.length; ct++) {
 
 		var estado = lista_estados[ct];
-		if (estado._initial === true) {
+		if (estado[_final] === true) {
+			estado.graph = fsa.EndState.create({ position : { x : _x , y : _y }});		
+		}
+		else if (estado[_init] === true) {
 			estado.graph = fsa.StartState.create({ position : { x : _x , y : _y }});
-		} else if (estado._final === true) {
-			estado.graph = fsa.EndState.create({ position : { x : _x , y : _y }});
 		} else {
 			estado.graph = fsa.State.create({ position : { x : _x , y : _y }, label : estado.nome});
 		}
@@ -39,18 +46,23 @@ MachineDesigner.prototype.drawMachine = function()  {
 		for (var fc = 0; fc < funcoes.length; fc++) {
 			var nm_funcao = funcoes[fc];
 			var lista_destino = estado[nm_funcao];
-			console.log(lista_destino.length);
-			var is_array = (typeof lista_destino.slice !== undefined) ? true : false;
+
+		var is_array = (typeof lista_destino.slice !== undefined) ? true : false;
 			if (is_array !== true) {
 				for (var cont_des = 0; cont_des < lista_destino.length; cont_des++) {
 						var obj_destino = lista_destino[cont_des];
 					estado.graph.joint(obj_destino.graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
 				}
 			} else {
-				console.log('aqui');
 				var obj_destino = lista_destino;
-				estado.graph.joint(obj_destino.graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
+				if  ( typeof obj_destino !== 'undefined')  {
+					var is_array = (typeof lista_destino.slice !== undefined) ? true : false;
+					if (is_array === true && obj_destino.length > 0) {
+						estado.graph.joint(obj_destino[0].graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
+					}
+				}
 			}
+			
 		}
 		
 	}						

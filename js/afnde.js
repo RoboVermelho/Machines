@@ -32,6 +32,7 @@ AfndeTest.prototype.test = function(word,state_list) {
 		eclose = this.eclose,
 		identifier = this.property_identifier,
         e_close_result_list = [],
+		end_signal = this.end_signal,
         size = state_list.length;
         
     for (; cont < size; cont++) {
@@ -54,7 +55,8 @@ AfndeTest.prototype.test = function(word,state_list) {
     if(word.length !== 0) {
         valid_word = this.test(word,new_states_list);
     } else {
-        valid_word = hasObject(new_states_list,qf,identifier);
+		valid_word = collectionHasProperty(new_states_list,end_signal);
+		
     }
     return valid_word;
 }

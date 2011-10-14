@@ -15,6 +15,13 @@ function inArray(vlr,_array) {
 	return false;
 }
 
+/**
+	Verifica se um objeto existe em um conjunto,  pela checagem de um campo  identificador.
+	@param {String} vlr - valor a ser pesquisado.
+	@param {Array Mixed} _array - conjunto onde será pesquisado.
+	@param {Mixed} identifier - identificador a ser usado como referência.
+	@return {Mixed} índice no array, ou undefined se não encontrado.
+*/
 function objectInArray(vlr,_array,identifier) {
 	var cont = 0,
 		size = _array.length;
@@ -22,10 +29,14 @@ function objectInArray(vlr,_array,identifier) {
 		if (_array[cont][identifier] === vlr) {
 			return _array[cont];
 		}
-	}					
+	}				
 }
 
-
+/**
+	Converte uma string em um array.
+	@param {String} word - palavra a ser convertida.
+	@return  {Array} 
+*/
 function strToArray(word) {
     var letter,
         size = word.length,
@@ -37,7 +48,15 @@ function strToArray(word) {
     }    
     return _array;
 }
+//<=======================================>
 
+
+/**
+	Recebe um array de objetos, e retorna o mesmo array sem
+	elementos duplicados.
+	@param {Array Object} _array - conjunto para ser pesquisado.
+	@param {String} identifier - registro
+*/
 function arrayUnique(_array,identifier) {
     var new_array = [],
         cont = 0,
@@ -53,6 +72,8 @@ function arrayUnique(_array,identifier) {
     return new_array;
 }
 
+/**
+*/
 function hasObject(collection,obj,identifier) {
     var size = collection.length,
         cont = 0;
@@ -63,7 +84,7 @@ function hasObject(collection,obj,identifier) {
         }
     }
     return false;
-}
+} 
 // <--------------------------------------------------------------------->
 
 function equalSet(conj1,conj2,identifier) {
@@ -103,3 +124,11 @@ function collectionHasProperty(collection,property) {
     return false;
 }
 // <--------------------------------------------------------------------->
+
+
+function hasProperty(obj,property) {
+    if (obj.hasOwnProperty(property)) {
+        return true;
+    }
+    return false;
+}
