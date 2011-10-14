@@ -3,7 +3,6 @@
 <script src='../js/jquery-1.6.4.min.js' ></script>
 <script src='qunit/qunit.js' ></script>
 <link href='qunit/qunit.css' rel='Stylesheet' type='text/css' />
-<script src='../js/app.js' ></script>
 <script src='../js/base.js' ></script>
 <script>
   $(function(){
@@ -21,77 +20,8 @@ module("Modulo inicial");
 		equal( inArray("nova",array),true, "Testes com strings" );
 	});
 	
-	test("Teste de: markCheckbox", function() {
-		var checkbox = $("#teste");
-		console.log(checkbox);
-		equal(markCheckbox(),false,"Valores vazios");
-		equal(markCheckbox(checkbox,['1']),true,"Valor  encontrado");
-		equal(markCheckbox(checkbox,['10']),true,"Valor não encontrado");
-		
-	});
 	
-	test("teste de: markAsSelected",function() {
-
-		equal(markAsSelected($("ul#markAsSelected li"),$("ul#markAsSelected li:eq(2)"),'red') ,true,'Encontrando elementos');
-		equal(markAsSelected($("ul#markAsSelected li"),$("ul#markAsSelected li:eq(2)"),'blue') ,true,'Classe nao existe');
-		equal(markAsSelected($("ul#markAsSelected li"),$("ul#markAsSelected li:eq(20)"),'blue') ,true,'Elemento nao existe');
-		equal(markAsSelected($("ul#markAsSelected lai"),$("ul#markAsSelected li:eq(20)"),'blue') ,true,'Lista e elemento nao existem');
-	});
-	
-	
-	test("Teste de: getDestinyListFromMachine",function() {
-		var q1 = {};
-		var q2 = {};
-		//1--
-		strictEqual(getDestinyListFromMachine(),false,"Estado e funcao nao definidas");
-		var v = getDestinyListFromMachine('q2','a');
-		
-		strictEqual(v.length,0,"Estado e funcao nao estao na maquina");
-		MYAPP.MACHINE.q1 = q1;
-		//2-- 
-		var res = getDestinyListFromMachine('q1','a');
-		strictEqual(res.length,[].length,"Estado esta definido, e função não está");
-		
-		//3--
-		 q1.a = [q2];
-		MYAPP.MACHINE.q1;
-		var res = getDestinyListFromMachine('q1','a');
-		strictEqual(res[0],q2,"Estado e função  estão na máquina");
-		
-		//4--
-		var res = getDestinyListFromMachine('q1');
-		strictEqual(res,false,"Quantidade de parâmetros insuficiente");
-		
-		//5--
-		var res = getDestinyListFromMachine('q1',1);
-		strictEqual(res,false,"Tipo do parametro incorreto");		
-		
-	});
-	//----------------------------------------------------------------------------------------------------------------------------->
-	
-	test("Exibe destino da funcao",function() {
-		
-		var lista_res = [
-			{
-				nome : 'q0'
-			},
-			{
-				nome : 'q1'
-			}
-		];
-		var result = exibirDestinoDaFuncao(lista_res,$("#destino_funcao input"));
-		equal(result,true,'Teste comum') ;
-		
-		
-		var result = exibirDestinoDaFuncao({},$("#destino_funcao input"));
-		equal(result,false,'Tipo de parâmetro incorreto') ;
-	});
-	
-	
-	test("show transition of machine", function() {
-			strictEqual(showTransitionOfMachine('a'),false,"Erro: falta o estado");
-			strictEqual(showTransitionOfMachine($("#state"),$("#func")),true,"Normal");
-	});
+	//===========================================
 	
   });
   </script>
@@ -108,26 +38,6 @@ module("Modulo inicial");
 	 <h2 id="qunit-userAgent"></h2>
 	 <ol id="qunit-tests"></ol>
 	 <div id="qunit-fixture">test markup, will be hidden</div>
-	 
-	 
-	 <input type='checkbox'  id='teste' value='1' />
-	 
-	 <ul id='markAsSelected'>
-		<li>1</li>
-		<li>2</li>
-		<li>3</li>
-	</ul>	
-	
-	
-	 <span id='state'>q0</span>
-	 <span id='func' >a</span>
-	 <div id='destino_funcao'>
-		<input type='checkbox' value='q0' />
-		<input type='checkbox' value='q1' />
-		<input type='checkbox' value='q2' />
-		
-	</div>		
-		
 
 </body>
 </html>

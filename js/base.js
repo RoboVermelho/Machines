@@ -71,8 +71,13 @@ function arrayUnique(_array,identifier) {
     }
     return new_array;
 }
-
+//=================================================
 /**
+	Verifica se o objeto existe em uma coleção através de um identificador.
+	@param {Array Object} collection - coleção a ser pesquisada.
+	@param {Object} 	obj - objeto a ser pesquisado.
+	@param {String} identifier - campo para verificação.
+	@return {Boolean}
 */
 function hasObject(collection,obj,identifier) {
     var size = collection.length,
@@ -85,8 +90,14 @@ function hasObject(collection,obj,identifier) {
     }
     return false;
 } 
-// <--------------------------------------------------------------------->
+//=================================================
 
+
+/**
+	Verifica se dois conjuntos de objetos são iguais.
+	@param {Array Object} conj1 - primeiro conjunto a ser  pesquisado.
+	@param {Array Object} conj2 - segundo conjunto a ser pesquisado.
+*/
 function equalSet(conj1,conj2,identifier) {
     var size = conj1.length,
         conj_elm,
