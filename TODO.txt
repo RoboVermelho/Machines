@@ -1,0 +1,5 @@
+TODO:
+	Verificar se o gráfico está sendo gerado corretamente
+	Fazer a conversão de AFND-E para AFND
+	Pacotes de testes
+	

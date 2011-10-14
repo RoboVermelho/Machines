@@ -1,0 +1,142 @@
+
+<html>
+	<head>
+		<style>
+			.borda_cinza {
+				border:1px solid #ccc;
+			}
+			* {
+				margin:0px;
+				padding:0px;
+			}
+			ul {
+				list-style:none;
+			}
+			
+			#container {
+				margin:auto;
+				width:800px;
+				
+			}
+			
+			#new_states {
+				width:600px;
+				float:left;
+				height:300px;
+				padding:5px;
+			}
+			
+			.container_app {
+				width:600px;
+				float:left;
+				height:300px;
+				padding:5px;			
+			}
+			
+			.box {
+				width:200px;
+				float:left;
+				height:290px;
+				margin-right:20px;
+			}			
+			
+		</style>
+	</head>
+	<body>
+		<div id='container' >
+			<div id='new_states' class='borda_cinza' class='container_app' >
+				<div id='list_estados' class='borda_cinza box' >
+					<p>
+						<label for='estado' >Novo estado:</label>
+						<input type='text' name='estado' />
+						<input type='button' name='nv_estado' value='OK' />
+					</p>
+					<ul id='lista_estado' >
+						<li><span>q0</span></li>
+					</ul>					
+				</div>
+				
+				<div id='list_funcoes' class='borda_cinza box'  >
+					<p>
+						<label for='estado' >Nova função:</label>
+						<input type='text' name='funcao' />
+						<input type='button' name='nv_funcao' value='OK' />
+					</p>	
+					<ul id='lista_funcao' >
+					</ul>
+				</div>				
+				<input type='button' name='construir_maquina' value='CONSTRUIR MAQUINA' />
+			</div>
+			
+			<style>
+				#contruir_maquina {
+					margin:auto;
+					
+				}
+				
+				#contruir_maquina  ul li{
+					float:left;
+					width:120px;
+					height:20px;
+
+					margin:0px 5px 5px 0px;
+					padding:5px;
+					cursor:pointer;
+					border:solid 1px #d00;
+				}
+				
+				#contruir_maquina  ul li input[type=checkbox] {
+					margin-right:5px;
+					top:2px;
+					position:relative;
+				}
+				
+				#contruir_maquina  ul {
+					display:block;
+					clear:both;
+				}
+				
+				#contruir_maquina #painel_config {
+					width:500px;
+					height:150px;
+					background:#ddd;
+					clear:both;
+					padding:5px;
+				}
+				
+				.selected {
+					background:#d00;
+					color:#fff;
+				}
+			</style>
+			<div id='contruir_maquina' class='container_app' >
+				<ul id='lista_estados' >
+				<!--
+					<li>q1</li>
+					<li>q2</li>
+				-->
+				</ul>
+				<div id='painel_config' >
+					<ul id='func_list'>
+					<!--
+						<li>a</li>
+						<li>b</li>
+					-->
+					</ul>
+					<ul id='state_list'>
+						<!-- <li><input type='checkbox' name='func' value='1' />valor 1</li> -->
+					</ul>
+				</div>
+				
+			</div>
+			
+			
+			
+		</div>
+		<script src='js/jquery-1.6.4.min.js' ></script>
+		<script src='js/base.js' ></script>
+		<script src='js/app.js' ></script>
+	
+		</script>
+	</body>
+</html>

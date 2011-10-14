@@ -1,0 +1,8 @@
+Quando clico na função de transição:
+	Pesquiso na máquina pelo estado selecionado.
+	Depois se existe a letra.
+	Se existir:
+		Marco as checkbox.
+	Se não existir:
+		Crio 
+		Desmarco todas a checkbox.

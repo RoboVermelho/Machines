@@ -1,0 +1,369 @@
+<! DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title></title>
+	</head>
+	<body>
+	    <input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' />
+		<input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' />
+		
+		<span id='lista_funcao' ></span>
+		<span id='lista_estado' ></span>
+		
+		<input type='button' name='organizar_maquina' value='Organizar Maquina' />
+		<input type='button' name='criar_maquina' value='Criar Maquina' />
+		
+		<ul id='ul_transicoes'>
+		</ul>
+		
+		<ul id='estados_especiais' >
+		</ul>
+		Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' />
+		<div id='paper' ></div>
+		<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />
+		<div id='converted_machine' ></div>
+		<script src='js/jquery-1.6.4.min.js' ></script>
+		<script src='js/base.js' ></script>
+		<script src='js/joint.all.min.js' ></scritpt>
+		<script src='js/joint.dia.fsa.min.js' ></script>
+		<script src='js/afnd.js' ></script>
+		<script src='js/afnde.js' ></script>
+		<script src='js/afd.js' ></script>
+		<script src='js/afnd_to_afd.js' ></script>
+		<script src='js/machine_designer.js' ></script>
+		<script>
+			$(function() {
+				var APP = {};
+				APP.funcoes = [];
+				APP.estados = [];
+				APP.maquina = {};
+				APP.CONFIG = {};
+				APP.CONFIG.state_identifier = 'nome';
+				APP.CONFIG.epson_signal = 'E';
+				APP.CONFIG.init_state = '_inicial';
+				APP.CONFIG.end_state = '_final';
+				APP.CONFIG.DOM = {};
+				APP.CONFIG.DOM.tela_maquina = "div#paper";
+				
+				//------------------------------------------------------------------------------------------------>
+				function defineMachineType() {
+					var state_name_list = APP.estados;
+					
+					var state_list = [];
+					var func_list = APP.funcoes;
+					var cont = 0,
+						end = APP.CONFIG.end_state,
+						ini  = APP.CONFIG.init_state,
+						epson = APP.CONFIG.epson_signal;
+					
+					
+					for (var ct  = 0; ct < state_name_list.length; ct++) {
+						state_list.push(APP.maquina[state_name_list[ct]]);
+					}					
+					var size = state_list.length;
+					
+					
+					for (; cont < size; cont++) {
+						if (typeof state_list[cont][epson] !== 'undefined') {
+							if (state_list[cont][epson].length > 0) {
+								return 'afnde';
+							}						
+						}
+
+					}
+					
+					
+					for (cont = 0; cont < size; cont++) {
+						for (var cont2 = 0; cont2 < func_list.length; cont2++) {
+							if (typeof state_list[cont][func_list[cont2]]  !== 'undefined') {
+								if (state_list[cont][func_list[cont2]].length > 1) {
+									return 'afnd';
+								}
+							}
+						}
+					}
+					return 'afd' ;
+				}
+				
+				//------------------------------------------------------------------------------------------------>
+				function defineTester(machine_type) {
+				
+					var   end = APP.CONFIG.end_state,
+							ini  = APP.CONFIG.init_state;
+							
+					if (machine_type === 'afnde') {
+						return new AfndeTest({ end_signal : end, init_signal : ini, property_identifier : APP.CONFIG.state_identifier  }); 
+					}
+					if (machine_type === 'afnd') {
+						return new AfndTest(end);
+					}
+					
+					if (machine_type === 'afd') {
+						return new AfdTest(end);
+					}					
+				}
+				
+				function getInitialState() {
+					var estado_inicial;
+					var init = APP.CONFIG.init_state;
+					for (i in APP.maquina) {
+						if (APP.maquina.hasOwnProperty(i)) {
+							if (APP.maquina[i][init] === true) {
+								estado_inicial = APP.maquina[i];
+								return estado_inicial;
+							}
+						}
+					}				
+				}
+				
+				
+				//------------------------------------------------------------------------------------------------>
+				function simboloRegistrado(simbolo) {
+					var funcao_existe = inArray(simbolo,APP.funcoes);
+					var estado_existe = inArray(simbolo,APP.estados);
+					var epson_signal = APP.CONFIG.epson_signal;
+					if (funcao_existe === true || estado_existe === true || simbolo === epson_signal) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+				
+				//------------------------------------------------------------------------------------------------>
+				
+				function getStateList(machine) {
+					var machine = machine || APP.maquina;
+					var lista_estados = [];
+					for (i in machine) {
+						if (machine.hasOwnProperty(i)) {
+							lista_estados.push(machine[i]);
+						}
+					}	
+					return lista_estados;
+				}				
+				//--------------------------------------------------------------------------------------------------->
+				
+				$("input[name=validar_palavra]").click(function() {
+					var palavra = $("input[name=palavra]").val();
+					var transicoes = strToArray(palavra);
+					var end_state = APP.CONFIG.end_state;
+					var init  = APP.CONFIG.init_state;
+					
+					
+					var estado_inicial = getInitialState();
+					var machine_type = defineMachineType();
+					var word_test = defineTester(machine_type);
+					var valid_word = word_test.test(transicoes,estado_inicial);
+					
+					if (valid_word === true) {
+						alert('A palavra ' + palavra  + ' e valida');
+					} else  {
+						alert('A palavra ' + palavra  + ' nao e valida');
+					}					
+				});
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=nova_funcao]").click(function() {
+					var nome = $("input[name=funcao]").val(),
+						ja_existe = simboloRegistrado(nome);
+					
+					if (ja_existe === true) {
+						alert('Funcao ja registrada');
+					}
+					else {
+						APP.funcoes.push(nome);
+						$("#lista_funcao").append(nome + ", ");
+					}
+					
+					$("input[name=funcao]").focus();
+					$("input[name=funcao]").val('');					
+					
+				});
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=novo_estado]").click(function() {
+					var nome = $("input[name=estado]").val(),
+						   ja_existe = simboloRegistrado(nome);
+						   
+					if (ja_existe === true) {
+						alert('Estado ja registrado');
+					} 
+					else {
+						APP.estados.push(nome);
+						$("#lista_estado").append(nome + ", ");					
+					}
+					
+					$("input[name=estado]").focus();
+					$("input[name=estado]").val('');	
+					
+				});				
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=inicial]").live('click',function() {
+					var checked = $(this).attr('checked');
+					if (checked === 'checked') {
+						$("input[name=inicial]").removeAttr('checked');
+						$(this).attr('checked','checked');
+					}
+				});
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=organizar_maquina]").click(function() {
+					var lista_estados = APP.estados,
+						   lista_funcoes = APP.funcoes,
+						   num_estados = lista_estados.length,
+						   epson = APP.CONFIG.epson_signal,
+						   cont_est = 0,
+						   cont_func = 0;
+					
+					if (inArray(epson,lista_funcoes) === false) {
+						lista_funcoes.push(epson);
+					}
+					var num_funcoes = lista_funcoes.length;
+					$("ul#ul_transicoes").empty();
+					
+					//Listar combinações de funções/estados.
+					for (; cont_est < num_estados; cont_est++) {
+						for (cont_func  = 0; cont_func < num_funcoes; cont_func++) {
+							var item_lista = $("<li>");
+							$(item_lista).append("<span class='nome_estado' >" + lista_estados[cont_est] + "</span>");
+							$(item_lista).append("<strong><span class='nome_funcao' >" + lista_funcoes[cont_func] + "</span></strong>  ->");
+						
+
+							for (var cont_est2 = 0; cont_est2 < num_estados; cont_est2++) {
+								$(item_lista).append(lista_estados[cont_est2] + "<input class='state_check' type='checkbox' value='" + lista_estados[cont_est2] + "' /> ");
+							}
+							$("ul#ul_transicoes").append($(item_lista));
+						}
+					}
+					
+					//Lista de opções especiais para os estados.
+					$("ul#estados_especiais").empty();
+					for (var cont_est = 0; cont_est < num_estados; cont_est++) {
+						$("ul#estados_especiais").append("<li id='"+ lista_estados[cont_est] + "'><span>" + lista_estados[cont_est] + "</span> Estado inicial: <input type='checkbox' name='inicial' /> Estado final: <input type='checkbox'  name='final' /></li>");
+					}
+					
+				});
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=criar_maquina]").click(function() {
+					var lista_nome_estados = APP.estados;
+					var lista_estados = [];
+					for (var cont = 0; cont < lista_nome_estados.length; cont++) {
+						lista_estados.push({ nome : lista_nome_estados[cont] });
+					}
+					
+					//Registra as transições entre estados.
+					var node_list = $("ul#ul_transicoes li");
+					for (var node_count  = 0; node_count < node_list.length; node_count++) {
+							var vlr = node_list[node_count];
+							var nome_estado = $(vlr).children('span.nome_estado').text();
+							var estado = objectInArray(nome_estado,lista_estados,'nome');
+							var funcao = $(vlr).find('span.nome_funcao').text();
+							var destinos = [];
+							var lista_checkbox = $(vlr).find("input[type=checkbox].state_check:checked");
+							
+							for (var contc = 0; contc < lista_checkbox.length; contc++) {
+								var nome_destino = $(lista_checkbox[contc]).val();
+								var obj_destino = objectInArray(nome_destino,lista_estados,'nome');
+								destinos.push(obj_destino);
+							}
+							estado[funcao] = destinos; 
+							APP.maquina[estado.nome] = estado;							
+					}
+					
+					//Marca estados finais e iniciais.
+					for (i in APP.maquina) {
+						if (APP.maquina.hasOwnProperty(i)) {
+							var nome = APP.maquina[i].nome;
+							var estado_inicial  = ($("ul#estados_especiais li#" + nome  + " input[name=inicial]:checked").length >= 1 )  ? true : false;
+							var estado_final =   ($("ul#estados_especiais li#" + nome  + " input[name=final]:checked").length    >= 1 ) 	  ? true : false;
+							if (estado_inicial === true) {
+								APP.maquina[i]._inicial = true;
+							}
+							
+							if (estado_final === true) {
+								APP.maquina[i]._final = true;
+							}							
+						}
+					}
+					
+					//Lista de estados.
+					var lista_estados = getStateList();
+					
+					//Desenhando máquina.
+					//drawMachine(,lista_estados);
+					var machine_designer = new MachineDesigner();
+					machine_designer.paper = { id : 'paper', width : 500, height : 500 };
+					machine_designer.lista_estados = lista_estados;
+					machine_designer.lista_funcoes = APP.funcoes;
+					machine_designer.drawMachine();
+					
+					
+					//Fim de desenhando máquina.
+					var tipo_maquina = defineMachineType();
+					if (tipo_maquina === 'afnd') { //Habilitar conversão.
+						//$("<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />").insertAfter(APP.CONFIG.DOM.tela_maquina);
+					}
+					
+				});
+				//------------------------------------------------------------------------------------------------------------->
+				
+
+				//------------------------------------------------------------------------------------------------------------------------------------->
+				
+				
+				
+				$("input[name=converter_afnde_afnd]").live('click',function() {
+					var conversor = new AfndToAfd();
+					var initial_state = getInitialState();
+					var funcoes = APP.funcoes;
+					conversor.final_signal =  APP.CONFIG.end_state;
+					conversor.init_signal = APP.CONFIG.init_state;
+					conversor.state_ident  = APP.CONFIG.state_identifier;
+					var afd_machine = conversor.convert(funcoes,initial_state);
+					var machine_designer = new MachineDesigner();
+					console.log(afd_machine);
+					machine_designer.paper = { id : 'converted_machine', width: 500, height: 500 };
+					machine_designer.lista_funcoes = APP.funcoes;
+					machine_designer.lista_estados = getStateList(afd_machine);
+					machine_designer.drawMachine();
+					
+					
+
+					
+					
+					
+					
+				});
+				
+				
+				var q0 = {};
+				var q1  = {};
+				q0.__constructor = 'q0';
+				q0.a = [q0,q1];
+				q0._initial = true;
+
+				q1.__constructor__ = 'q1';
+				q1._final = true;
+
+				var j = new AfndToAfd();
+				
+			
+				
+				
+				var lista = getStateList(j.convert(['a','b'],q0));
+				console.log(lista);
+				var machine_designer = new MachineDesigner();
+				machine_designer.paper = { id : 'converted_machine', width: 500, height: 500 };
+				machine_designer.lista_funcoes = ['a','b'];
+				machine_designer.lista_estados = lista;
+				machine_designer.drawMachine();
+
+				
+				
+			});
+		</script>
+	</body>
+</html>
