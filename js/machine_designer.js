@@ -1,10 +1,9 @@
-function MachineDesigner(paper,lista_estados,lista_funcoes)  {
-	this.paper = paper;
-	this.lista_estados = lista_estados;
-	this.lista_funcoes = lista_funcoes;
-	this._ident = 'nome';
-	this._final = '_final';
-	this._init = '_init';
+function MachineDesigner(config)  {
+	for (i in config) {
+		if (config.hasOwnProperty(i)) {
+			this[i] = config[i];
+		}
+	}
 }
 
 MachineDesigner.prototype.drawMachine = function()  {

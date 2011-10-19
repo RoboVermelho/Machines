@@ -97,6 +97,7 @@ function hasObject(collection,obj,identifier) {
 	Verifica se dois conjuntos de objetos são iguais.
 	@param {Array Object} conj1 - primeiro conjunto a ser  pesquisado.
 	@param {Array Object} conj2 - segundo conjunto a ser pesquisado.
+	@param {String} identifier - campo usado como identificador.
 */
 function equalSet(conj1,conj2,identifier) {
     var size = conj1.length,
@@ -120,8 +121,9 @@ function equalSet(conj1,conj2,identifier) {
 
 /**
 Verifica se em uma coleção de objetos, pelo menos um deles, tem uma propriedade setada.
-@param {Object Array} collection - Array de objetos.
+@param {Object Array} collection - Array de objetos. 
 @param {String} property - propriedade a ser pesquisada.
+@return {Boolean}
 */
 function collectionHasProperty(collection,property) {
     var cont = 0,
@@ -136,7 +138,12 @@ function collectionHasProperty(collection,property) {
 }
 // <--------------------------------------------------------------------->
 
-
+/**
+	Verifica se um objeto tem uma propriedade.
+	@param {Object} obj - objeto a ser verificado.
+	@param {String} property - nome da propriedade a ser pesquisada.
+	@return {Boolean}
+*/
 function hasProperty(obj,property) {
     if (obj.hasOwnProperty(property)) {
         return true;
