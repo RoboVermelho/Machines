@@ -2,4 +2,4 @@ TODO:
 	Fazer a conversão de AFND-E para AFND -> concluído
 	Pacotes de testes
 	Melhorar interface gráfica
-	
+	Alterando
