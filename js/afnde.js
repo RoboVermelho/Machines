@@ -12,13 +12,26 @@ AfndeTest.prototype.eclose = function(state) {
         exist_in_list = false;
     
     state_list.push(state);
-    while (typeof state[epson] !== 'undefined' && exist_in_list === false) {
-        exist_in_list = hasObject(state_list,state[epson],ident);
-        if (exist_in_list === false) {
-            state_list.push(state[epson]);
-            state = state[epson];
-        }
-    }
+	for (var state_cont = 0; state_cont < state_list.length; state_cont++) {
+		state = state_list[state_cont];
+		
+		while (typeof state[epson] !== 'undefined' && exist_in_list === false) {
+			var destinos_epson = state[epson],
+				cont = 0,
+				size = destinos_epson.length;
+				
+				if (size === 0) { break; }
+				
+				for (; cont < size; cont++) {
+					destino = destinos_epson[cont];
+					exist_in_list = hasObject(state_list,destino,ident);
+					if (exist_in_list === false) {
+						state_list.push(destino);
+						state = state[epson];
+					}				
+				}
+		}
+	}
     return state_list;
 }
 // <--------------------------------------------------------------------->
@@ -34,30 +47,33 @@ AfndeTest.prototype.test = function(word,state_list) {
         e_close_result_list = [],
 		end_signal = this.end_signal,
         size = state_list.length;
-        
-    for (; cont < size; cont++) {
-        if (typeof state_list[cont][letter] !== 'undefined') {
-            apply_func_list = apply_func_list.concat(state_list[cont][letter]);
-        }
-    }
-    apply_func_list = arrayUnique(apply_func_list,identifier);
     
-    ////Aplicar e-close nos resultados.
-    var eclose_list = [];
-    size = apply_func_list.length;
-    for (cont = 0; cont < size; cont++) {
-        eclose_list = eclose_list.concat(eclose(apply_func_list[cont]));
-    }
-   
-    var new_states_list = arrayUnique(eclose_list,identifier);
-    
-    
-    if(word.length !== 0) {
-        valid_word = this.test(word,new_states_list);
-    } else {
-		valid_word = collectionHasProperty(new_states_list,end_signal);
+	if (typeof letter !== 'undefined') {
+			
+		for (; cont < size; cont++) {
+			if (typeof state_list[cont][letter] !== 'undefined') {
+				apply_func_list = apply_func_list.concat(state_list[cont][letter]);
+			}
+		}
+		apply_func_list = arrayUnique(apply_func_list,identifier);
 		
-    }
+		////Aplicar e-close nos resultados.
+		var eclose_list = [];
+		size = apply_func_list.length;
+		for (cont = 0; cont < size; cont++) {
+			eclose_list = eclose_list.concat(eclose(apply_func_list[cont]));
+		}
+	   
+		var new_states_list = arrayUnique(eclose_list,identifier);
+
+		if(word.length !== 0) {
+			valid_word = this.test(word,new_states_list);
+		} else {
+			valid_word = collectionHasProperty(new_states_list,end_signal);		
+		}
+	} else {
+		valid_word = collectionHasProperty(state_list,end_signal);	
+	}
     return valid_word;
 }
 // <--------------------------------------------------------------------->

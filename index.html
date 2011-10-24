@@ -9,6 +9,7 @@
 			padding:0px;
 			font-size:12px;
 			font-family:Arial;
+			list-style:none;
 		}
 		.draw_space {
 			border : 1px solid #000;
@@ -36,7 +37,7 @@
 		
 		ul#ul_transicoes {
 			margin-left:100px;
-			list-style:none;
+			
 		}
 		</style>
 	</head>
@@ -334,15 +335,12 @@
 						var lista = getStateList(afnd_machine);
 						
 						var machine_designer = new MachineDesigner({
-																								paper :  { id : 'converted_machine', width: 500, height: 500 },
-																								lista_funcoes = ['a','b'],
-																								lista_estados = lista
+																								paper 			: { id : 'converted_machine', width: 500, height: 500 },
+																								lista_funcoes : ['a','b'],
+																								lista_estados : lista,
+																								_init : APP.CONFIG.init_state,
+																								_final : APP.CONFIG.end_state
 																							});
-						/*
-						machine_designer.paper = { id : 'converted_machine', width: 500, height: 500 };
-						machine_designer.lista_funcoes = ['a','b'];
-						machine_designer.lista_estados = lista;
-						*/
 						machine_designer.drawMachine(); 				
 				
 				});
@@ -403,7 +401,9 @@
 							var machine_designer = new MachineDesigner({ 
 								paper : { id : 'paper', width : 500, height : 500 },
 								lista_estados : lista_estados,
-								lista_funcoes : APP.funcoes
+								lista_funcoes : APP.funcoes,
+								_init : APP.CONFIG.init_state,
+								_final : APP.CONFIG.end_state								
 							});
 							machine_designer.drawMachine();
 							
