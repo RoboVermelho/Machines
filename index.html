@@ -13,8 +13,8 @@
 		}
 		.draw_space {
 			border : 1px solid #000;
-			width:500px;
-			height:500px;
+			width:400px;
+			height:300px;
 		}
 		
 		div#container {
@@ -41,8 +41,8 @@
 		}
 		
 		div.tela {
-			width:400px;
-			height:300px;
+			width:550px;
+			height:350px;
 			position:absolute;
 			background:#fff;
 			border:1px solid #000;
@@ -53,12 +53,14 @@
 	<body>
 		<div id='container' class='borda' >
 			<div class='tela'  data-index='1' >
-				<p><input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
-				<p><input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
+				<h3>Defina os estados e as funções de transição</h3>
+				<p><label>Funções</label><input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
+				<p><label>Estados</label><input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
 				<input type='button' value='Proximo' name='prox' />
 			</div>
 			
 			<div class='tela' data-index='2' >
+				<h3>Defina as transições entre estados</h3>
 				<ul id='ul_transicoes'></ul>
 				<ul id='estados_especiais' ></ul>
 				<input type='button' value='Anterior' name='ant' />
@@ -66,11 +68,12 @@
 			</div>
 			
 			<div class='tela' data-index='3' >
+				<h3>Resultado e teste com palavras</h3>
 				<span id='word_test' >Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' /></span>
 				<div id='paper' class='draw_space'  ></div>
 				<input type='button' name='converter_afnd_afd' value='Converter máquina para AFD' />
 				<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />
-				<div id='converted_machine'  class='draw_space' ></div>
+				<div id='converted_machine'  class='draw_space' style='background:#ff' ></div>
 
 				<input type='button' value='Anterior' name='ant' />				
 			</div>
@@ -107,6 +110,10 @@
 				$("div#paper").show(); $("#word_test").show(); criarMaquina_action();
 			});
 			
+			$("input[name=converter_afnd_afd]").live('click',function() { convertAfndToAfd_action(); });
+			$("input[name=converter_afnde_afnd]").live('click',function() { convertAfndeToAfnd_action(); });			
+			
+			
 			//Pré-config 
 			$("input[name=converter_afnd_afd]").hide();
 			$("input[name=converter_afnde_afnd]").hide();
@@ -123,8 +130,9 @@
 				APP.CONFIG.epson_signal = 'E';
 				APP.CONFIG.init_state = '_inicial';
 				APP.CONFIG.end_state = '_final';
-				APP.CONFIG.DOM = {};
-				APP.CONFIG.DOM.tela_maquina = "div#paper";
+				
+				APP.DOM = {};
+				APP.DOM.tela_maquina = "div#paper";
 				
 				//------------------------------------------------------------------------------------------------>
 				function defineMachineType() {
@@ -164,8 +172,7 @@
 				}
 				
 				//------------------------------------------------------------------------------------------------>
-				function defineTester(machine_type) {
-				
+				function defineTester(machine_type) {				
 					var   end = APP.CONFIG.end_state,
 							ini  = APP.CONFIG.init_state;
 							
@@ -182,6 +189,7 @@
 						return new AfdTest(end);
 					}					
 				}
+				//------------------------------------------------------------------------------------------------>
 				
 				function getInitialState() {
 					var estado_inicial;
@@ -195,9 +203,8 @@
 						}
 					}				
 				}
-				
-				
 				//------------------------------------------------------------------------------------------------>
+				
 				function simboloRegistrado(simbolo) {
 					var funcao_existe = inArray(simbolo,APP.funcoes);
 					var estado_existe = inArray(simbolo,APP.estados);
@@ -209,8 +216,8 @@
 						return false;
 					}
 				}
-				
 				//------------------------------------------------------------------------------------------------>
+				
 				function getStateList(machine) {
 					var machine = machine || APP.maquina;
 					var lista_estados = [];
@@ -223,7 +230,66 @@
 				}				
 				//--------------------------------------------------------------------------------------------------->
 				
-				$("input[name=validar_palavra]").click(function() {
+				$("input[name=validar_palavra]").click( wordValidate_action);
+
+				//------------------------------------------------------------------------------------------------>
+				
+				$("input[name=nova_funcao]").click(addFunction_action);
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=novo_estado]").click(addState_action);				
+				
+				//------------------------------------------------------------------------------------------------>
+				$("input[name=inicial]").live('click',function() {
+					var checked = $(this).attr('checked');
+					if (checked === 'checked') {
+						$("input[name=inicial]").removeAttr('checked');
+						$(this).attr('checked','checked');
+					}
+				});
+				
+				//------------------------------------------------------------------------------------------------------------->
+				
+
+
+				
+				function addFunction_action() {
+					try {
+						var nome = $("input[name=funcao]").val(),
+							ja_existe = simboloRegistrado(nome);
+						
+						if (ja_existe === true) {
+							alert('Funcao ja registrada');
+						}
+						else {
+							APP.funcoes.push(nome);
+							$("#lista_funcao").append(nome + ", ");
+						}
+						
+						$("input[name=funcao]").focus();
+						$("input[name=funcao]").val('');					
+						return true;
+					} catch (ex) { return false; }				
+				}
+				
+				function addState_action() {
+					var nome = $("input[name=estado]").val(),
+						   ja_existe = simboloRegistrado(nome);
+						   
+					if (ja_existe === true) {
+						alert('Estado ja registrado');
+					} 
+					else {
+						APP.estados.push(nome);
+						$("#lista_estado").append(nome + ", ");					
+					}
+					
+					$("input[name=estado]").focus();
+					$("input[name=estado]").val('');					
+				
+				}
+				
+				function wordValidate_action() {
 					var palavra = $("input[name=palavra]").val();
 					var transicoes = strToArray(palavra);
 					var end_state = APP.CONFIG.end_state;
@@ -243,103 +309,61 @@
 					} else  {
 						alert('A palavra ' + palavra  + ' nao e valida');
 					}					
-				});
-				//------------------------------------------------------------------------------------------------>
+				}
 				
-				$("input[name=nova_funcao]").click(function() {
-					try {
-						var nome = $("input[name=funcao]").val(),
-							ja_existe = simboloRegistrado(nome);
-						
-						if (ja_existe === true) {
-							alert('Funcao ja registrada');
-						}
-						else {
-							APP.funcoes.push(nome);
-							$("#lista_funcao").append(nome + ", ");
-						}
-						
-						$("input[name=funcao]").focus();
-						$("input[name=funcao]").val('');					
-						return true;
-					} catch (ex) { return false; }
-				});
-				
-				//------------------------------------------------------------------------------------------------>
-				$("input[name=novo_estado]").click(function() {
-					var nome = $("input[name=estado]").val(),
-						   ja_existe = simboloRegistrado(nome);
-						   
-					if (ja_existe === true) {
-						alert('Estado ja registrado');
-					} 
-					else {
-						APP.estados.push(nome);
-						$("#lista_estado").append(nome + ", ");					
-					}
-					
-					$("input[name=estado]").focus();
-					$("input[name=estado]").val('');	
-					
-				});				
-				
-				//------------------------------------------------------------------------------------------------>
-				$("input[name=inicial]").live('click',function() {
-					var checked = $(this).attr('checked');
-					if (checked === 'checked') {
-						$("input[name=inicial]").removeAttr('checked');
-						$(this).attr('checked','checked');
-					}
-				});
-				
-				//------------------------------------------------------------------------------------------------------------->
-				
-
-				$("input[name=converter_afnd_afd]").live('click',function() {
-					
+				function convertAfndToAfd_action() {
 					var initial_state = getInitialState();
-					var funcoes = APP.funcoes;
-					conversor.final_signal =  APP.CONFIG.end_state;
-					conversor.init_signal = APP.CONFIG.init_state;
-					conversor.state_ident  = APP.CONFIG.state_identifier;
+
 					
 					var conversor = new AfndToAfd({
 						final_signal   :  APP.CONFIG.end_state,
 						init_signal    :  APP.CONFIG.init_state,
-						state_ident  :  APP.CONFIG.state_identifier
+						state_ident  :  APP.CONFIG.state_identifier,
+						state_base_name : 'q'
 					});
+					
+					var funcoes = APP.funcoes;
+					conversor.final_signal =  APP.CONFIG.end_state;
+					conversor.init_signal = APP.CONFIG.init_state;
+					conversor.state_ident  = APP.CONFIG.state_identifier;					
 					
 					
 					var afd_machine = conversor.convert(funcoes,initial_state);
 					var machine_designer = new MachineDesigner({
-						paper :  { id : 'converted_machine', width: 500, height: 500 },
+						paper :  { id : 'paper', width: 500, height: 500 },
 						lista_funcoes : APP.funcoes,
-						lista_estados :getStateList(afd_machine)
+						lista_estados :getStateList(afd_machine),
+						_final : APP.CONFIG.end_state,
+						_init : APP.CONFIG.init_state, 
+						_epson : APP.CONFIG.epson_signal ,
+					   _ident : APP.CONFIG.state_identifier						
 					
 					});
-					machine_designer.drawMachine();
-				});
-				
-				$("input[name=converter_afnde_afnd]").live('click',function() {
+					machine_designer.drawMachine();				
+				}
+				//------------------------------------------------------------------------------------------>
+				function convertAfndeToAfnd_action() {
 						var conversor = new AfndeToAfnd({  _final : APP.CONFIG.end_state,
 																			_init : APP.CONFIG.init_state, 
 																			_epson : APP.CONFIG.epson_signal ,
 																		   _ident : APP.CONFIG.state_identifier });
 						var initial_state = getInitialState();
 						
-						var afnd_machine = conversor.convert(APP.lista_funcoes,conversor.eclose(initial_state));
+						var afnd_machine = conversor.convert(APP.funcoes,conversor.eclose(initial_state));
 						var lista = getStateList(afnd_machine);
 						
 						var machine_designer = new MachineDesigner({
-																								paper 			: { id : 'converted_machine', width: 500, height: 500 },
-																								lista_funcoes : ['a','b'],
+																								paper 			: { id : 'paper', width: 500, height: 500 },
+																								lista_funcoes : APP.funcoes,
 																								lista_estados : lista,
 																								_init : APP.CONFIG.init_state,
 																								_final : APP.CONFIG.end_state
 																							});
-						machine_designer.drawMachine(); 				
+						machine_designer.drawMachine(); 					
 				
-				});
+				}
+				//------------------------------------------------------------------------------------------>
+				
 				
 				function organizarMaquina_action() {
 					var lista_estados = APP.estados,
@@ -369,9 +393,7 @@
 							$("ul#ul_transicoes").append($(item_lista));
 						}
 					}
-					
-					//Lista de opções especiais para os estados.
-					$("ul#estados_especiais").empty();
+					$("ul#estados_especiais").empty(); //Lista de opções especiais para os estados.
 					
 					$.map(lista_estados,function(elm, index) {
 						$("ul#estados_especiais").append("<li id='"+ elm + "'><span>" + elm + "</span> Estado inicial: <input type='checkbox' name='inicial' /> Estado final: <input type='checkbox'  name='final' /></li>");

@@ -4,12 +4,7 @@ function AfndToAfd(config) {
 			this[i] = config[i];
 		}
 	}
-/**
-	this.state_ident = '__constructor__';
-	this.final_signal = '_final';
-	this.init_signal = '_initial';
-	this.state_base_name = 'q';
-*/
+
 };
 
 /**
@@ -59,41 +54,43 @@ AfndToAfd.prototype.convert = function(lista_letras,estado_inicial) {
 			result_state_index = 0,
 			index_estado_testado = 0,
             estado = test.estado,
-            letra = test.letra,
+            letra 	   = test.letra,
             estado_resultante = [],
-			
             index_estado_testado = getStateIndex(nova_maquina,'estado',estado,ident);
 
             //Gera o estado resultante.        
             estado_resultante = stateGenerate(estado,letra,ident);
         
-			//Verifica se esse estado já existe na máquina.
-			var estado_existe = this.stateExists(nova_maquina,estado_resultante);
-            if (estado_existe === true) {
-				result_state_index = this.getStateIndex(nova_maquina,'estado',estado_resultante,ident);
-                //nova_maquina[index_estado_testado][letra] = nova_maquina[state_index];
-              //  estado_existe = true;
-               // break;  
-            } else {
-				//Registra novo estado
-				var novo_estado = { estado : estado_resultante, nome : state_base_name + state_name_counter };
-				var index_novo_estado = nova_maquina.length;
-				nova_maquina[index_novo_estado] = novo_estado;
-				state_name_counter++;
+		
+			if (estado_resultante.length > 0) {
+				//Verifica se esse estado já existe na máquina.
+				var estado_existe = this.stateExists(nova_maquina,estado_resultante);
+				if (estado_existe === true) {
+					result_state_index = this.getStateIndex(nova_maquina,'estado',estado_resultante,ident);
+					//nova_maquina[index_estado_testado][letra] = nova_maquina[state_index];
+				  //  estado_existe = true;
+				   // break;  
+				} else {
+					//Registra novo estado
+					var novo_estado = { estado : estado_resultante, nome : state_base_name + state_name_counter };
+					var index_novo_estado = nova_maquina.length;
+					nova_maquina[index_novo_estado] = novo_estado;
+					state_name_counter++;
+					
+					//Verificar se o estado é final:
+					var is_final = this.isFinal(novo_estado); 
+					if (is_final === true) {
+						nova_maquina[index_novo_estado][final_signal] = true;
+					}
+					//nova_maquina[index_estado_testado][letra] = nova_maquina[index_novo_estado];
+					result_state_index  = index_novo_estado;
+					
+					
+					test_list = addTests(test_list,estado_resultante,lista_letras);		//Registra novos testes.
 				
-				//Verificar se o estado é final:
-				var is_final = this.isFinal(novo_estado); 
-				if (is_final === true) {
-					nova_maquina[index_novo_estado][final_signal] = true;
 				}
-				//nova_maquina[index_estado_testado][letra] = nova_maquina[index_novo_estado];
-				result_state_index  = index_novo_estado;
-				
-				
-				test_list = addTests(test_list,estado_resultante,lista_letras);		//Registra novos testes.
-			
+				nova_maquina[index_estado_testado][letra] = nova_maquina[result_state_index];
 			}
-			nova_maquina[index_estado_testado][letra] = nova_maquina[result_state_index];
         }
     return nova_maquina; 
 }

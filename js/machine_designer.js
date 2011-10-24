@@ -45,23 +45,28 @@ MachineDesigner.prototype.drawMachine = function()  {
 		for (var fc = 0; fc < funcoes.length; fc++) {
 			var nm_funcao = funcoes[fc];
 			var lista_destino = estado[nm_funcao];
-
-		var is_array = (typeof lista_destino.slice !== undefined) ? true : false;
-			if (is_array !== true) {
-				for (var cont_des = 0; cont_des < lista_destino.length; cont_des++) {
-						var obj_destino = lista_destino[cont_des];
-					estado.graph.joint(obj_destino.graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
-				}
-			} else {
-				var obj_destino = lista_destino;
-				if  ( typeof obj_destino !== 'undefined')  {
-					var is_array = (typeof lista_destino.slice !== undefined) ? true : false;
-					if (is_array === true && obj_destino.length > 0) {
-						estado.graph.joint(obj_destino[0].graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
+		
+		if  ( typeof lista_destino !== 'undefined')  {
+			var is_array = (typeof lista_destino.slice !== 'undefined') ? true : false;
+				if (is_array === true) {
+					for (var cont_des = 0; cont_des < lista_destino.length; cont_des++) {
+							var obj_destino = lista_destino[cont_des];
+						estado.graph.joint(obj_destino.graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
 					}
+				} else {
+					var obj_destino = lista_destino;
+					var is_array = (typeof lista_destino.slice !== 'undefined') ? true : false;
+					if (is_array === true ) {
+						if (obj_destino.length > 0) {
+							estado.graph.joint(obj_destino[0].graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
+						}
+					} else {
+						estado.graph.joint(obj_destino.graph,(fsa.arrow.label = nm_funcao, fsa.arrow));
+					}
+					
 				}
+				
 			}
-			
 		}
 		
 	}						

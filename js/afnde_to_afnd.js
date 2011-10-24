@@ -48,41 +48,42 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
         }   
         estado_resultante = arrayUnique(estado_resultante,ident);      
         
-        
-        ////Aplicar e-close nos resultados.
-        estado_resultante = this.applyEclose(estado_resultante);
-        
-        //Verifica se esse estado já existe na máquina.
-        var estado_existe = false,
-            size_maquina = nova_maquina.length,
-            counter_maquina = 0;
-        
-        for (; counter_maquina < size_maquina; counter_maquina++) {
-            var est_nova_maquina = nova_maquina[counter_maquina].estado
-            estado_existe = equalSet(est_nova_maquina, estado_resultante,
-                                     ident);
-            
-            if (estado_existe === true) {
-                nova_maquina[index_estado][letra] = nova_maquina[counter_maquina];
-                estado_existe = true;
-                break;  
-            }
-        }
+        if (estado_resultante.length > 0)  {
+			////Aplicar e-close nos resultados.
+			estado_resultante = this.applyEclose(estado_resultante);
+			
+			//Verifica se esse estado já existe na máquina.
+			var estado_existe = false,
+				size_maquina = nova_maquina.length,
+				counter_maquina = 0;
+			
+			for (; counter_maquina < size_maquina; counter_maquina++) {
+				var est_nova_maquina = nova_maquina[counter_maquina].estado
+				estado_existe = equalSet(est_nova_maquina, estado_resultante,
+										 ident);
+				
+				if (estado_existe === true) {
+					nova_maquina[index_estado][letra] = nova_maquina[counter_maquina];
+					estado_existe = true;
+					break;  
+				}
+			}
 
-        if (estado_existe === false) {//Adiciona estado à máquina.
-            var index_new_state = nova_maquina.length;
-            nova_maquina[index_new_state] = { estado : estado_resultante };
-            nova_maquina[index_new_state][ident] = 'q' + state_name_counter;
-            
-            var estado_final = collectionHasProperty(estado_resultante,final_state_sig);
-            if (estado_final === true) {
-                nova_maquina[index_new_state][final_state_sig] = true;
-            }
-            state_name_counter++;
-            
-            nova_maquina[index_estado][letra] = nova_maquina[index_new_state];
-            test_list = addTests(test_list,estado_resultante,lista_letras);
-        } 
+			if (estado_existe === false) {//Adiciona estado à máquina.
+				var index_new_state = nova_maquina.length;
+				nova_maquina[index_new_state] = { estado : estado_resultante };
+				nova_maquina[index_new_state][ident] = 'q' + state_name_counter;
+				
+				var estado_final = collectionHasProperty(estado_resultante,final_state_sig);
+				if (estado_final === true) {
+					nova_maquina[index_new_state][final_state_sig] = true;
+				}
+				state_name_counter++;
+				
+				nova_maquina[index_estado][letra] = nova_maquina[index_new_state];
+				test_list = addTests(test_list,estado_resultante,lista_letras);
+			} 
+		}
     }
     return nova_maquina; 
 }
@@ -128,6 +129,7 @@ AfndeToAfnd.prototype.getStateIndex =  function (machine,state_field,state,ident
     return -1;
 }
 // <--------------------------------------------------------------------->
+
 
 AfndeToAfnd.prototype.eclose = function(state) {
     var state_list = [],
