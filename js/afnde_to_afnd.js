@@ -130,8 +130,30 @@ AfndeToAfnd.prototype.getStateIndex =  function (machine,state_field,state,ident
 }
 // <--------------------------------------------------------------------->
 
-
 AfndeToAfnd.prototype.eclose = function(state) {
+    var state_list = [],
+        epson = this._epson,
+        ident = this._ident,
+		cont = 0,
+        exist_in_list = false;
+    
+    state_list.push(state);
+
+	for (; cont < state_list.length; cont++) {
+		if (typeof state[epson] !== 'undefined' ) {
+			for (var ct = 0; ct < state[epson].length; ct++) {
+				exist_in_list = hasObject(state_list,state[epson][ct],ident);
+				if (!exist_in_list) {
+					state_list.push(state[epson][ct]);
+				}
+			}
+			
+		}
+	}
+    return state_list;
+}
+
+/* AfndeToAfnd.prototype.eclose = function(state) {
     var state_list = [],
         epson = this._epson,
         ident = this._ident,
@@ -146,4 +168,4 @@ AfndeToAfnd.prototype.eclose = function(state) {
         }
     }
     return state_list;
-}
+} */
