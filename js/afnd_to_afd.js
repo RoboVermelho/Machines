@@ -1,8 +1,15 @@
-function AfndToAfd() {
+function AfndToAfd(config) {
+	for (i in config) {
+		if (config.hasOwnProperty(i)) {
+			this[i] = config[i];
+		}
+	}
+/**
 	this.state_ident = '__constructor__';
 	this.final_signal = '_final';
 	this.init_signal = '_initial';
 	this.state_base_name = 'q';
+*/
 };
 
 /**

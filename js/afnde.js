@@ -8,7 +8,7 @@ function AfndeTest(config) {
 AfndeTest.prototype.eclose = function(state) {
     var state_list = [],
 		ident = this.property_identifier,
-		epson=  this.epson_signal
+		epson=  this.epson_signal,
         exist_in_list = false;
     
     state_list.push(state);
@@ -61,7 +61,7 @@ AfndeTest.prototype.test = function(word,state_list) {
 		var eclose_list = [];
 		size = apply_func_list.length;
 		for (cont = 0; cont < size; cont++) {
-			eclose_list = eclose_list.concat(eclose(apply_func_list[cont]));
+			eclose_list = eclose_list.concat(this.eclose(apply_func_list[cont]));
 		}
 	   
 		var new_states_list = arrayUnique(eclose_list,identifier);

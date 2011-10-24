@@ -39,24 +39,41 @@
 			margin-left:100px;
 			
 		}
+		
+		div.tela {
+			width:400px;
+			height:300px;
+			position:absolute;
+			background:#fff;
+			border:1px solid #000;
+			padding:5px;
+		}
 		</style>
 	</head>
 	<body>
 		<div id='container' class='borda' >
-			<p><input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
-			<p><input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
+			<div class='tela'  data-index='1' >
+				<p><input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
+				<p><input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
+				<input type='button' value='Proximo' name='prox' />
+			</div>
+			
+			<div class='tela' data-index='2' >
+				<ul id='ul_transicoes'></ul>
+				<ul id='estados_especiais' ></ul>
+				<input type='button' value='Anterior' name='ant' />
+				<input type='button' value='Proximo' name='prox'  />
+			</div>
+			
+			<div class='tela' data-index='3' >
+				<span id='word_test' >Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' /></span>
+				<div id='paper' class='draw_space'  ></div>
+				<input type='button' name='converter_afnd_afd' value='Converter máquina para AFD' />
+				<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />
+				<div id='converted_machine'  class='draw_space' ></div>
 
-			<input type='button' name='organizar_maquina' value='Organizar Maquina' />
-			<input type='button' name='criar_maquina' value='Criar Maquina' />
-			
-			<ul id='ul_transicoes'></ul>
-			<ul id='estados_especiais' ></ul>
-			
-			<span id='word_test' >Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' /></span>
-			<div id='paper' class='draw_space'  ></div>
-			<input type='button' name='converter_afnd_afd' value='Converter máquina para AFD' />
-			<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />
-			<div id='converted_machine'  class='draw_space' ></div>
+				<input type='button' value='Anterior' name='ant' />				
+			</div>
 		</div>
 		<script src='js/jquery-1.6.4.min.js' ></script>
 		<script src='js/base.js' ></script>
@@ -70,6 +87,26 @@
 		<script src='js/machine_designer.js' ></script>
 		<script>
 			$(function() {
+			$("div.tela").hide();
+			$("div.tela[data-index=1]").show();
+			
+			function changeTela(tela_atual,iterator) {
+				var index = $(tela_atual).hide().data("index") + iterator;
+				$("div.tela[data-index="+index +"]").show();					
+			}
+			//---------------------------------------------------------------------------------------------------->
+			
+			$("input[name=prox]").click(function() { changeTela($(this).parents('div.tela'),1); });
+			$("input[name=ant]").click(function() { changeTela($(this).parents('div.tela'),-1);  });			
+			
+			$("div.tela[data-index=1] input[name=prox]").click(function() {
+				organizarMaquina_action();
+			});
+			
+			$("div.tela[data-index=2] input[name=prox]").click(function() {
+				$("div#paper").show(); $("#word_test").show(); criarMaquina_action();
+			});
+			
 			//Pré-config 
 			$("input[name=converter_afnd_afd]").hide();
 			$("input[name=converter_afnde_afnd]").hide();
@@ -100,7 +137,6 @@
 						ini  = APP.CONFIG.init_state,
 						epson = APP.CONFIG.epson_signal;
 					
-					
 					for (var ct  = 0; ct < state_name_list.length; ct++) {
 						state_list.push(APP.maquina[state_name_list[ct]]);
 					}					
@@ -113,10 +149,8 @@
 								return 'afnde';
 							}						
 						}
-
 					}
-					
-					
+
 					for (cont = 0; cont < size; cont++) {
 						for (var cont2 = 0; cont2 < func_list.length; cont2++) {
 							if (typeof state_list[cont][func_list[cont2]]  !== 'undefined') {
@@ -168,6 +202,7 @@
 					var funcao_existe = inArray(simbolo,APP.funcoes);
 					var estado_existe = inArray(simbolo,APP.estados);
 					var epson_signal = APP.CONFIG.epson_signal;
+					
 					if (funcao_existe === true || estado_existe === true || simbolo === epson_signal) {
 						return true;
 					} else {
@@ -176,7 +211,6 @@
 				}
 				
 				//------------------------------------------------------------------------------------------------>
-				
 				function getStateList(machine) {
 					var machine = machine || APP.maquina;
 					var lista_estados = [];
@@ -210,8 +244,8 @@
 						alert('A palavra ' + palavra  + ' nao e valida');
 					}					
 				});
-				
 				//------------------------------------------------------------------------------------------------>
+				
 				$("input[name=nova_funcao]").click(function() {
 					try {
 						var nome = $("input[name=funcao]").val(),
@@ -258,8 +292,56 @@
 					}
 				});
 				
-				//------------------------------------------------------------------------------------------------>
-				$("input[name=organizar_maquina]").click(function() {
+				//------------------------------------------------------------------------------------------------------------->
+				
+
+				$("input[name=converter_afnd_afd]").live('click',function() {
+					
+					var initial_state = getInitialState();
+					var funcoes = APP.funcoes;
+					conversor.final_signal =  APP.CONFIG.end_state;
+					conversor.init_signal = APP.CONFIG.init_state;
+					conversor.state_ident  = APP.CONFIG.state_identifier;
+					
+					var conversor = new AfndToAfd({
+						final_signal   :  APP.CONFIG.end_state,
+						init_signal    :  APP.CONFIG.init_state,
+						state_ident  :  APP.CONFIG.state_identifier
+					});
+					
+					
+					var afd_machine = conversor.convert(funcoes,initial_state);
+					var machine_designer = new MachineDesigner({
+						paper :  { id : 'converted_machine', width: 500, height: 500 },
+						lista_funcoes : APP.funcoes,
+						lista_estados :getStateList(afd_machine)
+					
+					});
+					machine_designer.drawMachine();
+				});
+				
+				$("input[name=converter_afnde_afnd]").live('click',function() {
+						var conversor = new AfndeToAfnd({  _final : APP.CONFIG.end_state,
+																			_init : APP.CONFIG.init_state, 
+																			_epson : APP.CONFIG.epson_signal ,
+																		   _ident : APP.CONFIG.state_identifier });
+						var initial_state = getInitialState();
+						
+						var afnd_machine = conversor.convert(APP.lista_funcoes,conversor.eclose(initial_state));
+						var lista = getStateList(afnd_machine);
+						
+						var machine_designer = new MachineDesigner({
+																								paper 			: { id : 'converted_machine', width: 500, height: 500 },
+																								lista_funcoes : ['a','b'],
+																								lista_estados : lista,
+																								_init : APP.CONFIG.init_state,
+																								_final : APP.CONFIG.end_state
+																							});
+						machine_designer.drawMachine(); 				
+				
+				});
+				
+				function organizarMaquina_action() {
 					var lista_estados = APP.estados,
 						   lista_funcoes = APP.funcoes,
 						   num_estados = lista_estados.length,
@@ -295,57 +377,12 @@
 						$("ul#estados_especiais").append("<li id='"+ elm + "'><span>" + elm + "</span> Estado inicial: <input type='checkbox' name='inicial' /> Estado final: <input type='checkbox'  name='final' /></li>");
 					});
 					
-					$("input[name=criar_maquina]").show();
-				});
+					$("input[name=criar_maquina]").show();				
+				}
 				
-				//------------------------------------------------------------------------------------------------>
-				$("input[name=criar_maquina]").click(function() { $("div#paper").show(); $("#word_test").show(); criarMaquina_action(); });
-				//------------------------------------------------------------------------------------------------------------->
-				
-
-				//------------------------------------------------------------------------------------------------------------------------------------->
-				
-				
-				
-				$("input[name=converter_afnd_afd]").live('click',function() {
-					var conversor = new AfndToAfd();
-					var initial_state = getInitialState();
-					var funcoes = APP.funcoes;
-					conversor.final_signal =  APP.CONFIG.end_state;
-					conversor.init_signal = APP.CONFIG.init_state;
-					conversor.state_ident  = APP.CONFIG.state_identifier;
-					var afd_machine = conversor.convert(funcoes,initial_state);
-					var machine_designer = new MachineDesigner({
-						paper :  { id : 'converted_machine', width: 500, height: 500 },
-						lista_funcoes : APP.funcoes,
-						lista_estados :getStateList(afd_machine)
-					
-					});
-					machine_designer.drawMachine();
-				});
-				
-				$("input[name=converter_afnde_afnd]").live('click',function() {
-						var conversor = new AfndeToAfnd({  _final : APP.CONFIG.end_state,
-																			_init : APP.CONFIG.init_state, 
-																			_epson : APP.CONFIG.epson_signal ,
-																		   _ident : APP.CONFIG.state_identifier });
-						var initial_state = getInitialState();
-						
-						var afnd_machine = conversor.convert(APP.lista_funcoes,conversor.eclose(initial_state));
-						var lista = getStateList(afnd_machine);
-						
-						var machine_designer = new MachineDesigner({
-																								paper 			: { id : 'converted_machine', width: 500, height: 500 },
-																								lista_funcoes : ['a','b'],
-																								lista_estados : lista,
-																								_init : APP.CONFIG.init_state,
-																								_final : APP.CONFIG.end_state
-																							});
-						machine_designer.drawMachine(); 				
-				
-				});
 				//========================================================================
-				
+					
+
 					function criarMaquina_action () {
 						try {
 							var lista_nome_estados = APP.estados;
@@ -396,8 +433,7 @@
 						
 							//Lista de estados.
 							var lista_estados = getStateList();
-					
-					
+
 							var machine_designer = new MachineDesigner({ 
 								paper : { id : 'paper', width : 500, height : 500 },
 								lista_estados : lista_estados,
