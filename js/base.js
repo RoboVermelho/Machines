@@ -150,3 +150,14 @@ function hasProperty(obj,property) {
     }
     return false;
 }
+
+/**
+	Remove elemento de um array.
+*/
+function arrayRemove(arr,elm) {
+    var index = $.inArray(elm,arr);
+    if (index !== -1) {
+        return arr.slice(0,index).concat(arr.slice(index + 1));
+    } 
+    return false;
+}

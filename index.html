@@ -349,7 +349,7 @@
 																		   _ident : APP.CONFIG.state_identifier });
 						var initial_state = getInitialState();
 						
-						var afnd_machine = conversor.convert(APP.funcoes,conversor.eclose(initial_state));
+						var afnd_machine = conversor.convert(APP.funcoes,conversor.eclose([],initial_state));
 						var lista = getStateList(afnd_machine);
 						
 						var machine_designer = new MachineDesigner({

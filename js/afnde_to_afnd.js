@@ -13,6 +13,13 @@ function AfndeToAfnd(config) {
     }
 }
 
+/**
+	Nota: a coleção de estados de cada elemento da nova máquina, ficam na chave "estado":
+	estado = {
+		nome : "Teste",
+		estado : [ q1,q2,q3]
+	}
+*/
 // <--------------------------------------------------------------------->
 AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
     var nova_maquina = [],
@@ -25,11 +32,16 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
 		getStateIndex = this.getStateIndex,
         test_list = [];
 
+	lista_letras = arrayRemove(lista_letras,this._epson); //Remove epson da lista.
+	
+	//Criar primeiro estado
     nova_maquina[0] = { estado :  estado_inicial };    
     nova_maquina[0][ident] =  'q' + state_name_counter;
     test_list = addTests(test_list,nova_maquina[0].estado,lista_letras);
     state_name_counter++;
     nova_maquina[0][init_state_sig] = true;
+	
+	//Executa testes para cada letra em cada estado.
     for (var cont = 0; cont < test_list.length; cont++) {
         
         var test = test_list[cont],
@@ -40,6 +52,7 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
             estado_counter = 0,
             index_estado = getStateIndex(nova_maquina,'estado',estado,ident);
 
+			
         //Gera o estado resultante.
         for (; estado_counter < size_estado; estado_counter++) {
             if (typeof estado[estado_counter][letra] !== 'undefined') {
@@ -49,45 +62,54 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
         estado_resultante = arrayUnique(estado_resultante,ident);      
         
         if (estado_resultante.length > 0)  {
-			////Aplicar e-close nos resultados.
-			estado_resultante = this.applyEclose(estado_resultante);
 			
-			//Verifica se esse estado já existe na máquina.
-			var estado_existe = false,
-				size_maquina = nova_maquina.length,
-				counter_maquina = 0;
+			estado_resultante = this.applyEclose(estado_resultante);////Aplicar e-close nos resultados.
+			var estado_existe = this.machineHasState(estado_resultante,nova_maquina); //Verifica se esse estado já existe na máquina.
 			
-			for (; counter_maquina < size_maquina; counter_maquina++) {
-				var est_nova_maquina = nova_maquina[counter_maquina].estado
-				estado_existe = equalSet(est_nova_maquina, estado_resultante,
-										 ident);
-				
-				if (estado_existe === true) {
-					nova_maquina[index_estado][letra] = nova_maquina[counter_maquina];
+			if (estado_existe === true) {
+					var indice_estado =  getStateIndex (nova_maquina,'estado',estado_resultante,ident) ;
+					nova_maquina[index_estado][letra] = nova_maquina[indice_estado];
 					estado_existe = true;
-					break;  
-				}
-			}
-
-			if (estado_existe === false) {//Adiciona estado à máquina.
-				var index_new_state = nova_maquina.length;
-				nova_maquina[index_new_state] = { estado : estado_resultante };
-				nova_maquina[index_new_state][ident] = 'q' + state_name_counter;
-				
-				var estado_final = collectionHasProperty(estado_resultante,final_state_sig);
-				if (estado_final === true) {
-					nova_maquina[index_new_state][final_state_sig] = true;
-				}
-				state_name_counter++;
-				
-				nova_maquina[index_estado][letra] = nova_maquina[index_new_state];
-				test_list = addTests(test_list,estado_resultante,lista_letras);
+			} else  { //Adiciona estado à máquina.
+					var index_new_state = nova_maquina.length;
+					nova_maquina[index_new_state] = { estado : estado_resultante };
+					nova_maquina[index_new_state][ident] = 'q' + state_name_counter;
+					
+					var estado_final = collectionHasProperty(estado_resultante,final_state_sig);
+					if (estado_final === true) {
+						nova_maquina[index_new_state][final_state_sig] = true;
+					}
+					state_name_counter++;
+					
+					nova_maquina[index_estado][letra] = nova_maquina[index_new_state];
+					test_list = addTests(test_list,estado_resultante,lista_letras);
 			} 
 		}
     }
+	console.log(nova_maquina);
     return nova_maquina; 
 }
 // <--------------------------------------------------------------------->
+
+/**
+	Verifica se a máquina já possui um estado.
+	Nota: os estados no caso são arrays de objetos.
+*/
+AfndeToAfnd.prototype.machineHasState = function(novo_estado,maquina) {
+	var size = maquina.length;
+	var estado_existe = false;
+	var ident = this._ident;
+	var cont  = 0;
+	
+	for (; cont < size; cont++) {
+		var est_maquina = maquina[cont].estado;
+		estado_existe = equalSet(est_maquina, novo_estado,ident);
+		if (estado_existe === true) {
+			return true;
+		}
+	}
+	return false;
+}
 
 AfndeToAfnd.prototype.applyEclose = function(estado) {
     ////Aplicar e-close nos resultados.
@@ -99,7 +121,7 @@ AfndeToAfnd.prototype.applyEclose = function(estado) {
         size = estado.length;
     
     for (; cont < size; cont++) {
-        eclose_list = eclose_list.concat(eclose(estado[cont]));
+        eclose_list = eclose_list.concat(eclose([],estado[cont]));
     }        
     estado_final  = arrayUnique(eclose_list,ident);  
     return estado_final;    
@@ -130,42 +152,29 @@ AfndeToAfnd.prototype.getStateIndex =  function (machine,state_field,state,ident
 }
 // <--------------------------------------------------------------------->
 
-AfndeToAfnd.prototype.eclose = function(state) {
-    var state_list = [],
-        epson = this._epson,
-        ident = this._ident,
-		cont = 0,
-        exist_in_list = false;
-    
-    state_list.push(state);
-
-	for (; cont < state_list.length; cont++) {
-		if (typeof state[epson] !== 'undefined' ) {
-			for (var ct = 0; ct < state[epson].length; ct++) {
-				exist_in_list = hasObject(state_list,state[epson][ct],ident);
-				if (!exist_in_list) {
-					state_list.push(state[epson][ct]);
-				}
-			}
-			
+AfndeToAfnd.prototype.eclose = function(lista,estado) {
+	var ident = this._ident,
+		 epson = this._epson,
+		 exist_in_list = false;
+		 
+		exist_in_list = hasObject(lista,estado,ident); 
+		if (exist_in_list ===  false) {
+			lista.push(estado);
+		} else {
+			return lista;
 		}
-	}
-    return state_list;
+		
+		var cont = 0;
+		var size = typeof estado[epson] !==  'undefined' ? estado[epson].length : 0;
+		
+		for (; cont < size; cont++) {
+			var novo_estado = estado[epson][cont];
+			var na_lista = hasObject(lista,novo_estado,ident);
+			if (na_lista === false) {
+				this.eclose(lista,novo_estado);
+			}
+		}
+	return lista;
 }
 
-/* AfndeToAfnd.prototype.eclose = function(state) {
-    var state_list = [],
-        epson = this._epson,
-        ident = this._ident,
-        exist_in_list = false;
-    
-    state_list.push(state);
-    while (typeof state[epson] !== 'undefined' && exist_in_list === false) {
-        exist_in_list = hasObject(state_list,state[epson],ident);
-        if (exist_in_list === false) {
-            state_list.push(state[epson]);
-            state = state[epson];
-        }
-    }
-    return state_list;
-} */
+
