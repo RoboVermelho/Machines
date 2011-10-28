@@ -13,11 +13,31 @@ function AfndeToAfnd(config) {
     }
 }
 
+/**
+	Define o estado destino, à partir de um estado base (ex: q1) e uma função (ex: a)
+*/
+AfndeToAfnd.prototype.destinyState = function(estado,letra) {
+		var cont = 0,
+			  size = state.length,
+			  ident = this.ident,
+			  estado_resultante = [];
+			  
+			  
+        //Gera o estado resultante.
+        for (; cont < size; cont++) {
+            if (typeof estado[cont][letra] !== 'undefined') {
+                estado_resultante = estado_resultante.concat(estado[cont][letra]);
+            }
+        }   
+        estado_resultante = arrayUnique(estado_resultante,ident);      
+        estado_resultante = this.applyEclose(estado_resultante);////Aplicar e-close nos resultados.
+		return estado_resultante;
+
+}
 // <--------------------------------------------------------------------->
 AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
     var nova_maquina = [],
         state_name_counter = 0,
-        final_state_name_counter = 0,
         ident = this._ident,
         addTests = this.addTests,
         final_state_sig = this._final,
@@ -25,55 +45,36 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
 		getStateIndex = this.getStateIndex,
         test_list = [];
 
-    nova_maquina[0] = { estado :  estado_inicial };    
-    nova_maquina[0][ident] =  'q' + state_name_counter;
+	//Cria primeiro estado.	
+	var first_state = { estado :  estado_inicial};
+	first_state[ident] =  'q' + state_name_counter;
+	first_state[init_state_sig] = true;
+	nova_maquina.push(first_state);
+	
     test_list = addTests(test_list,nova_maquina[0].estado,lista_letras);
     state_name_counter++;
-    nova_maquina[0][init_state_sig] = true;
+	
     for (var cont = 0; cont < test_list.length; cont++) {
         
         var test = test_list[cont],
             estado = test.estado,
             letra = test.letra,
-            estado_resultante = [],
             size_estado = estado.length,
             estado_counter = 0,
             index_estado = getStateIndex(nova_maquina,'estado',estado,ident);
 
-        //Gera o estado resultante.
-        for (; estado_counter < size_estado; estado_counter++) {
-            if (typeof estado[estado_counter][letra] !== 'undefined') {
-                estado_resultante = estado_resultante.concat(estado[estado_counter][letra]);
-            }
-        }   
-        estado_resultante = arrayUnique(estado_resultante,ident);      
-        
-        
-        ////Aplicar e-close nos resultados.
-        estado_resultante = this.applyEclose(estado_resultante);
-        
-        //Verifica se esse estado já existe na máquina.
-        var estado_existe = false,
-            size_maquina = nova_maquina.length,
-            counter_maquina = 0;
-        
-        for (; counter_maquina < size_maquina; counter_maquina++) {
-            var est_nova_maquina = nova_maquina[counter_maquina].estado
-            estado_existe = equalSet(est_nova_maquina, estado_resultante,
-                                     ident);
-            
-            if (estado_existe === true) {
-                nova_maquina[index_estado][letra] = nova_maquina[counter_maquina];
-                estado_existe = true;
-                break;  
-            }
-        }
-
-        if (estado_existe === false) {//Adiciona estado à máquina.
-            var index_new_state = nova_maquina.length;
-            nova_maquina[index_new_state] = { estado : estado_resultante };
-            nova_maquina[index_new_state][ident] = 'q' + state_name_counter;
-            
+		var estado_resultante = this.destinyState(estado,letra);
+		 var estado_existe = this.hasState(nova_maquina,estado_resultante);//Verifica se esse estado já existe na máquina.
+		 
+		if (estado_existe === true) {
+			var estado_resultante_index = this.getStateIndex(nova_maquina,'estado',estado_resultante,ident);
+			nova_maquina[index_estado][letra] = nova_maquina[estado_resultante_index];
+        }  else  {//Adiciona estado à máquina.
+            var novo_estado = { estado : estado_resultante };
+			novo_estado[ident] = 'q' + state_name_counter;
+			nova_maquina.push(novo_estado);
+			var index_novo_estado = this.getStateIndex(nova_maquina,'estado',novo_estado,ident);
+			
             var estado_final = collectionHasProperty(estado_resultante,final_state_sig);
             if (estado_final === true) {
                 nova_maquina[index_new_state][final_state_sig] = true;
@@ -88,8 +89,8 @@ AfndeToAfnd.prototype.convert =  function(lista_letras,estado_inicial) {
 }
 // <--------------------------------------------------------------------->
 
-AfndeToAfnd.prototype.applyEclose = function(estado) {
-    ////Aplicar e-close nos resultados.
+AfndeToAfnd.prototype.applyEclose = function(estado) {////Aplicar e-close nos resultados.
+
     var eclose_list = [],
         cont = 0,
         eclose = this.eclose,
@@ -112,6 +113,22 @@ AfndeToAfnd.prototype.addTests = function(test_list,novo_estado,lista_letras) {
         test_list.push({ estado : novo_estado , letra : lista_letras[cont_letras] });
     } 
     return test_list;
+}
+// <--------------------------------------------------------------------->
+
+/** Verifica se um estado existe na máquina, através do conjunto de estados */
+AfndeToAfnd.prototype.hasState = function (nova_maquina,nv_estado) {
+        var estado_existe = false,
+            size = nova_maquina.length,
+			ident = this.ident,
+            cont = 0;
+        
+        for (; cont < size ; cont++) {
+            var est_nova_maquina = nova_maquina[cont].estado;
+            estado_existe = equalSet(est_nova_maquina, nv_estado,ident);
+			if (estado_existe === true) { return true; }
+		}
+	return false;
 }
 // <--------------------------------------------------------------------->
 

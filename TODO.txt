@@ -3,3 +3,7 @@ TODO:
 	Pacotes de testes
 	Melhorar interface gráfica
 	Alterando
+	* Facilitar a função de encontrar o indíce de um estado (getStateIndex  (do conjunto de estados pro nome)).
+	* Criar o remover estado [estado/função]
+	
+	

@@ -10,10 +10,8 @@ AfndTest.prototype.test = function(word,late_state) {
         valid_word = false,
         list_size = (typeof atual_state_list !== 'undefined') ? atual_state_list.length : 0;
         cont = 0;
-
-    
+		
     if (typeof atual_state_list === 'undefined') {     //Machine lock. 
-        //console.log('Machine lock');  
         return false;
     }    
     

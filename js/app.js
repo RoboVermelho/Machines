@@ -13,13 +13,13 @@ MYAPP.CSS.selected_class = 'selected';
 //--MACHINE
 MYAPP.MACHINE = {};
 
-//--CONFIGURA?O.
-MYAPP.lista_estados = [{ nome : 'q0' }, { nome : 'q1', a : ['q1']},{ nome : 'q2'}];
-MYAPP.lista_funcoes = ['a','b','c'];
+//--CONFIGURAÇÃO.
+MYAPP.lista_estados = []; 
+MYAPP.lista_funcoes = []; 
 
 
 $("#new_states").hide();
-//$("#contruir_maquina").hide();
+
 $("input[name=nv_estado]").click(function() {
 	var nv_estado = $("input[name=estado]").val(),
 		state_list = $("ul#lista_estado li span"),
@@ -29,7 +29,7 @@ $("input[name=nv_estado]").click(function() {
 	for (; count < size; count++) {
 		var nm_state = $(state_list[count]).text();
 		if (nm_state === nv_estado) {
-			alert('Estado j?xiste');
+			alert('Estado ja xiste');
 			return false;
 		}
 	}
@@ -45,7 +45,6 @@ $("input[name=nv_funcao]").click(function() {
 	for (; count < size; count++) {
 		var nm_state = $(state_list[count]).text();
 		if (nm_state === nv_estado) {
-			alert('Fun? j?xiste');
 			return false;
 		}
 	}
@@ -56,28 +55,8 @@ $("input[name=construir_maquina]").click(function() {
 	$("#new_states").hide();
 	$("#contruir_maquina").show();
 	//Pega os estados.
-	/*
-	var lista_estados = [];
-	var list_estados = $("ul#lista_estado li span"),
-		cont = 0,
-		length = list_estados.length;
-	for (; cont < length; cont++) {
-		var nv_estado = $(list_estados[cont]).text();
-		lista_estados.push(nv_estado);
-	}
-	///////////////////////
-	//Lista de fun?s.
-	var list_funcoes = [],
-		ref_funcoes = $("ul#lista_funcao li span"),
-		cont = 0,
-		length = ref_funcoes.length;
-	for (; cont < length; cont++) {
-		var nv_funcao = $(ref_funcoes[cont]).text();
-		list_funcoes.push(nv_funcao);
-	}
-	*/
-	////////////////////////////////// -- Apenas para testes.
 
+	////////////////////////////////// -- Apenas para testes.
 	$.each(lista_estados,function(index,vlr) {
 		$("ul#lista_estados").append("<li>" + vlr + "</li>");
 		$("ul#state_list").append("<li><input type='checkbox' name='func' value='" + vlr + "' />" + vlr + "</li>");
@@ -86,11 +65,8 @@ $("input[name=construir_maquina]").click(function() {
 	$.each(lista_funcoes, function(index,vlr) {
 		$("ul#func_list").append("<li>" + vlr + "</li>");
 	});				
-	
-	
 });
 
-	
 	$.each(MYAPP.lista_estados,function(index,vlr) {
 		$("ul#lista_estados").append("<li>" + vlr.nome + "</li>");
 		$("ul#state_list").append("<li><input type='checkbox' name='func' value='" + vlr.nome + "' />" + vlr.nome + "</li>");
@@ -106,15 +82,8 @@ $("input[name=construir_maquina]").click(function() {
 	});
 	
 
-	MYAPP.lista_estados = [{ nome : 'q0' }, { nome : 'q1', a : ['q1']},{ nome : 'q2'}];
-	MYAPP.lista_funcoes = ['a','b','c'];
 	
-	
-	MYAPP.MACHINE.q0 = MYAPP.lista_estados[0];
-	MYAPP.MACHINE.q0.a = [MYAPP.lista_estados[0],MYAPP.lista_estados[1]];
-	
-	$("#contruir_maquina ul#func_list li").live("click", function() {
-		
+	$("#contruir_maquina ul#func_list li").live("click", function() {		
 		try {
 		var  selected_state = $("#contruir_maquina ul#lista_estados li.selected"),
 				selected_func   = $(this);
@@ -128,7 +97,7 @@ $("input[name=construir_maquina]").click(function() {
 		Exibe as transições de um estado em uma função.
 		@param {jQuery Object} state_selected - estado a ser pesquisado na máquina.
 		@param {jQuery Object} function_selected  - função a ser pesquisada.
-		@param {Boolean} se a a? foi efetuada com sucesso.
+		@param {Boolean} se a ação foi efetuada com sucesso.
 	*/
 	function showTransitionOfMachine(state_selected,function_selected) {
 		try {
