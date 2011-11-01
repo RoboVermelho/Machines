@@ -1,19 +1,12 @@
+var APP = APP || {};
+
 /**
 	Verifica se um valor existe dentro de um array.
 	@param {Mixed} vlr - valor a ser pesquisado.
 	@param {Array} _array - array em que o valor vai ser pesquisado.
 	@return {Boolean}
 */
-function inArray(vlr,_array) {
-	var cont = 0,
-		size = _array.length;
-	for (; cont < size; cont++) {
-		if (_array[cont] === vlr) {
-			return true;
-		}
-	}					
-	return false;
-}
+function inArray(vlr,_array) { return (_array.indexOf(vlr) !== -1) ? true : false; }
 
 /**
 	Verifica se um objeto existe em um conjunto,  pela checagem de um campo  identificador.
@@ -37,17 +30,7 @@ function objectInArray(vlr,_array,identifier) {
 	@param {String} word - palavra a ser convertida.
 	@return  {Array} 
 */
-function strToArray(word) {
-    var letter,
-        size = word.length,
-        _array = [],
-        cont = 0;
-    
-    for (; cont < size; cont++) {
-        _array.push(word.charAt(cont));
-    }    
-    return _array;
-}
+function strToArray(word) { return word.split(""); }
 //<=======================================>
 
 

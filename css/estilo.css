@@ -1,28 +1,120 @@
+/*Genéricos*/
 * {
 	margin:0px;
 	padding:0px;
-	font-size:10px;
 	font-family:Arial;
 	list-style:none;
 }
+.rounded {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.cor1 { background:#f00; color:#fff; }
+.cor2 { background:#FF6600; color:#fff; }
+.neutro { background:#000; color:#fff; }
+
+.rounded_top {
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomright: 0px;
+	-moz-border-radius-bottomleft: 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.soft_rounded {
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+}
+
 .draw_space {
 	border : 1px solid #000;
 	width:400px;
 	height:300px;
 }
 
+.borda { border : 1px solid #000; }
+.red_mark { border: 1px solid #f00; }
+
+/*Globais */
 div#container {
 	margin:30px auto 0px auto;
-	width:430px;
-	height:650px;
+	width:600px;
+	height:500px;
 	padding:5px;
 	
 }
 
-.borda {
-	border : 1px solid #000;
+div.tela {
+	width:590px;
+	height:490px;
+	position:absolute;
+	background:#fff;
+	border:1px solid #ccc;
+	padding:0px;
 }
 
+.conteudo {
+	height:400px;
+	width:580px;
+	overflow-x:hidden;
+	overflow-y:auto;
+	border:1px solid #ccc;
+	padding:0px 3px 3px 3px;
+	margin:3px;
+}
+
+
+
+h3 { text-align:center; display:block; margin-bottom:10px; height:17px; padding-top:3px; font-size:12px;  }
+
+input[type=button] { border:1px solid #ccc; padding:2px; font-size:10px; }
+
+input[name=prox],input[name=ant] {
+	width:80px;
+	float:right;
+	height:25px;	
+	margin-right:5px;
+	cursor:pointer;
+}
+
+input[type=text] { margin:0px 5px 0px 5px; }
+
+
+
+/*Primeira tela (criando estados)*/
+div#itens_maquina {
+	height:340px; margin:5px; width:570px;
+}
+div#itens_maquina  p {
+	margin:70px auto 0px auto;
+	font-size:14px;
+	width:300px;
+	padding:2px;
+	min-height:50px;
+	display:block;
+}
+div#itens_maquina p label { width: 60px; display:block; float:left; padding-top:2px; }
+
+div#itens_maquina span.func { 
+	min-width:13px;
+	height:13px;
+	display:block;
+	float:left;
+	padding:2px;
+	margin-right:3px;
+	cursor:pointer;	
+	text-align:center;
+}
+
+div#itens_maquina p input[type=button] { cursor:pointer; }
+
+/*Segunda tela (definindo transições)*/
+ul#ul_transicoes {
+	margin-left:100px;	
+}
 
 p span.list {
 	min-width:100px;
@@ -30,58 +122,25 @@ p span.list {
 	display:block;	
 }
 
-ul#ul_transicoes {
-	margin-left:100px;
-	
-}
 
-div.tela {
-	width:410px;
-	height:600px;
-	position:absolute;
-	background:#fff;
-	border:1px solid #ccc;
-	padding:5px;
-}
 
-.conteudo {
-	height:400px;
+
+ul#ul_transicoes li { margin-bottom:10px; }
+ul#ul_transicoes li span.nome_estado { width:50px; height:20px; }
+ul li { display:block; width:250px; height:20px; margin:2px; }
+ul li span , ul li strong { display:block; float:left; margin-right:3px; }
+ul li span.transition { min-width:30px; height:20px;    }
+ul li span  input[type=checkbox] { margin:0px 2px 0px 2px; top:4px; position:relative; }
+
+/* Terceira tela (exibindo e convertendo máquina)*/
+#paper { margin:3px; }
+
+
+
+div#word_test {
 	width:400px;
-	overflow-x:hidden;
-	overflow-y:auto;
-	border:1px solid #ccc;
-	padding:3px;
-	margin:3px;
-}
-
-p label { width: 42px; display:block; float:left; padding-top:2px; }
-
-h3 { text-align:center; }
-input[type=button] { background:#fff; border:1px solid #ccc; padding:2px; font-size:10px; }
-
-input[name=prox],input[name=ant] {
-	width:80px;
-	float:right;
-	height:25px;	
-	margin-left:5px;
-	cursor:pointer;
-}
-
-input[type=text] { margin:0px 5px 0px 5px; }
-
-span.func { 
-	width:15px;
-	height:15px;
 	display:block;
-	float:left;
-	padding:0px 0px 0px 5px;
-	background:#000;
-	color:#fff;
-	margin-right:3px;
-	cursor:pointer;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;	
-}
-
-.red_mark { border: 1px solid #f00; }
+	height:20px;
+	clear:both;
+	margin:auto;
+ }

@@ -6,38 +6,40 @@
 		<link href='css/estilo.css' type='text/css' rel='Stylesheet' />
 	</head>
 	<body>
-		<div id='container' class='borda' >
-			<div class='tela'  data-index='1' >
-				<h3>Defina os estados e as funções de transição</h3>
-				<div class='conteudo' >
-					<p><label>Funções</label><input type='text' name='funcao' /><input type='button' name='nova_funcao' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
-					<p><label>Estados</label><input type='text' name='estado' /><input type='button' name='novo_estado' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
+		<div id='container' class='borda rounded'  >
+			<div class='tela rounded'  data-index='1' >
+				<h3 class='rounded_top cor1' >Defina os estados e as funções de transição</h3>
+				<div id='itens_maquina' class='conteudo rounded' >
+					<p class='cor2 rounded' ><label for='funcao' >Funções</label><input type='text' name='funcao' /><input type='button' name='nova_funcao' class='soft_rounded' value='Nova função' /><span class='list' id='lista_funcao' ></span></p>
+					
+					<p class='cor2 rounded'><label for='estado' >Estados</label><input type='text' name='estado' /><input type='button' name='novo_estado' class='soft_rounded' value='Novo estado' /><span class='list' id='lista_estado' ></span></p>
 				</div>
-				<input type='button' value='Proximo' name='prox' />
+				<input type='button' class='rounded cor1' value='Proximo' name='prox' />
 			</div>
 			
-			<div class='tela' data-index='2' >
-				<h3>Defina as transições entre estados</h3>
-				<div class='conteudo' >
+			<div class='tela rounded' data-index='2' >
+				<h3 class='rounded_top cor1' >Defina as transições entre estados</h3>
+				<div class='conteudo rounded' >
 					<ul id='ul_transicoes'></ul>
 					<ul id='estados_especiais' ></ul>
 				</div>
-				<input type='button' value='Proximo' name='prox'  />
-				<input type='button' value='Anterior' name='ant' />
+				<input type='button' class='rounded cor1' value='Proximo' name='prox'  />
+				<input type='button' class='rounded cor1' value='Anterior' name='ant' />
 			</div>
 			
-			<div class='tela' data-index='3' >
-				<h3>Resultado e teste com palavras</h3>
-				<div class='conteudo' >
-					<span id='word_test' >Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' /></span>
-					<div id='paper' class='draw_space'  ></div>
-					<input type='button' name='converter_afnd_afd' value='Converter máquina para AFD' />
-					<input type='button' name='converter_afnde_afnd' value='Converter máquina para AFND' />
+			<div class='tela rounded' data-index='3' id='exibir_maquina' >
+				<h3 class='rounded_top cor1' >Resultado e teste com palavras</h3>
+				<div class='conteudo rounded' >
+					<div id='paper' class='draw_space rounded'  ></div>
+					<span id='word_test' >Testar palavra: <input type='text' name='palavra' /> <input type='button' name='validar_palavra' value='Verificar' /></span>						
+					<input type='button' class='rounded cor1' name='converter_afnd_afd' value='Converter máquina para AFD' />
+					<input type='button' class='rounded cor1' name='converter_afnde_afnd' value='Converter máquina para AFND' />
 				</div>
-				<input type='button' value='Anterior' name='ant' />				
+				<input type='button' class='rounded cor1' value='Anterior' name='ant' />				
 			</div>
 		</div>
 		<script src='js/jquery-1.6.4.min.js' ></script>
+		<script src='js/jquery-ui-1.8.16/js/jquery-ui-1.8.16.custom.min.js' ></script>
 		<script src='js/base.js' ></script>
 		<script src='js/joint.all.min.js' ></script>
 		<script src='js/joint.dia.fsa.min.js' ></script>
@@ -54,7 +56,7 @@
 			
 			function changeTela(tela_atual,iterator) {
 				var index = $(tela_atual).hide().data("index") + iterator;
-				$("div.tela[data-index="+ index +"]").show();					
+				$("div.tela[data-index="+ index +"]").show("slide");					
 			}
 			//---------------------------------------------------------------------------------------------------->
 			
@@ -71,19 +73,10 @@
 			$("span.func").live('click',function() { 
 				$(this).addClass('red_mark').siblings().removeClass('red_mark');
 			});
+
+			$("input[name=criar_maquina]").hide();//Pré-config 
 			
-			$("span.func").live('keyup',function() { 
-				alert();
-			});			
-			
-			//Pré-config 
-			$("input[name=converter_afnd_afd]").hide();
-			$("input[name=converter_afnde_afnd]").hide();
-			$("#word_test").hide();
-			$("input[name=criar_maquina]").hide();
-			$(".draw_space").hide();
-			
-			var APP = {};
+			var APP = APP || {};
 			APP.funcoes = [];
 			APP.estados = [];
 			APP.maquina = {};
@@ -136,12 +129,12 @@
 				//------------------------------------------------------------------------------------------------>
 				function defineTester(machine_type) {				
 					var   end = APP.CONFIG.end_state,
-							ini  = APP.CONFIG.init_state;
+						  ini  = APP.CONFIG.init_state;
 							
 					if (machine_type === 'afnde') {
-						return new AfndeTest({ end_signal     : end, 
-														  epson_signal : APP.CONFIG.epson_signal,  
-														  identifier        : APP.CONFIG.state_identifier  }); 
+						return new AfndeTest({   end_signal   : end, 
+												 epson_signal : APP.CONFIG.epson_signal,  
+												 identifier   : APP.CONFIG.state_identifier  }); 
 					}
 					if (machine_type === 'afnd') {
 						return new AfndTest(end);
@@ -152,7 +145,9 @@
 					}					
 				}
 				//------------------------------------------------------------------------------------------------>
-				
+				/**
+					Retorna o estado inicial da máquina.
+				*/
 				function getInitialState() {
 					var estado_inicial;
 					var init = APP.CONFIG.init_state;
@@ -180,6 +175,9 @@
 				}
 				//------------------------------------------------------------------------------------------------>
 				
+				/**
+					Retorna uma lista com os estados da máquina.
+				*/
 				function getStateList(machine) {
 					var machine = machine || APP.maquina;
 					var lista_estados = [];
@@ -211,10 +209,6 @@
 				});
 				
 				//------------------------------------------------------------------------------------------------------------->
-				
-
-
-				
 				function addFunction_action() {
 					try {
 						var nome = $("input[name=funcao]").val(),
@@ -225,7 +219,7 @@
 						}
 						else {
 							APP.funcoes.push(nome);
-							$("#lista_funcao").append("<span class='func' >" + nome + "</span>");
+							$("#lista_funcao").append("<span class='func neutro neutro soft_rounded' >" + nome + "</span>");
 						}
 						
 						$("input[name=funcao]").focus();
@@ -239,7 +233,7 @@
 						   ja_existe = simboloRegistrado(nome);
 						   
 					if (ja_existe === true) { alert('Estado ja registrado'); } 
-					else { APP.estados.push(nome); $("#lista_estado").append("<span class='func' >" + nome + "</span>"); }
+					else { APP.estados.push(nome); $("#lista_estado").append("<span class='func neutro soft_rounded' >" + nome + "</span>"); }
 					
 					$("input[name=estado]").val('').focus();					
 				
@@ -339,11 +333,11 @@
 						for (cont_func  = 0; cont_func < num_funcoes; cont_func++) {
 							var item_lista = $("<li>");
 							$(item_lista).append("<span class='nome_estado' >" + lista_estados[cont_est] + "</span>");
-							$(item_lista).append("<strong><span class='nome_funcao' >" + lista_funcoes[cont_func] + "</span></strong>  ->");
+							$(item_lista).append("<strong><span class='nome_funcao soft_rounded' >" + lista_funcoes[cont_func] + "</span> = </strong>");
 						
 
 							for (var cont_est2 = 0; cont_est2 < num_estados; cont_est2++) {
-								$(item_lista).append(lista_estados[cont_est2] + "<input class='state_check' type='checkbox' value='" + lista_estados[cont_est2] + "' /> ");
+								$(item_lista).append("<span class='transition soft_rounded'>" + lista_estados[cont_est2] + "<input class='state_check' type='checkbox' value='" + lista_estados[cont_est2] + "' /></span>");
 							}
 							$("ul#ul_transicoes").append($(item_lista));
 						}
