@@ -1,9 +1,7 @@
 TODO:
-	Fazer a conversão de AFND-E para AFND -> concluído
-	Pacotes de testes
-	Melhorar interface gráfica
-	Alterando
-	* Facilitar a função de encontrar o indíce de um estado (getStateIndex  (do conjunto de estados pro nome)).
+	* Pacotes de testes
+	* Melhorar interface gráfica -> fazendo.
 	* Criar o remover estado [estado/função]
+	* Deixar o código dentro dos namespaces.
 	
 	

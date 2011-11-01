@@ -1,4 +1,40 @@
-var APP = APP || {};
+(function(APP) {
+
+
+var nm = APP.namespace("APP.base");
+/**
+	Recebe uma lista de objetos, e os concatena em um novo objeto.
+	@param {Object} - uma quantidade X de objetos.
+	@return {Object}
+*/
+nm.mix = function () {
+	var arg, prop, child = {};
+	for (arg = 0; arg < arguments.length; arg += 1) {
+		for (prop in arguments[arg]) {
+			if (arguments[arg].hasOwnProperty(prop)) {
+				child[prop] = arguments[arg][prop];
+			}
+		}
+	}
+	return child;
+}
+
+/**
+	Adiciona todos os atributos de parent, para o objeto child.
+	@param {Object} parent - objeto pai, que vai doar a informação.
+	@param {Object} child - objeto filho, que vai receber as informações.
+	@return {Object}
+*/
+nm.extend = function(parent, child) {
+	var i;
+	child = child || {};
+	for (i in parent) {
+		if (parent.hasOwnProperty(i)) {
+			child[i] = parent[i];
+		}
+	}
+	return child;
+}
 
 /**
 	Verifica se um valor existe dentro de um array.
@@ -6,7 +42,7 @@ var APP = APP || {};
 	@param {Array} _array - array em que o valor vai ser pesquisado.
 	@return {Boolean}
 */
-function inArray(vlr,_array) { return (_array.indexOf(vlr) !== -1) ? true : false; }
+nm.inArray = function(vlr,_array) { return (_array.indexOf(vlr) !== -1) ? true : false; }
 
 /**
 	Verifica se um objeto existe em um conjunto,  pela checagem de um campo  identificador.
@@ -15,7 +51,7 @@ function inArray(vlr,_array) { return (_array.indexOf(vlr) !== -1) ? true : fals
 	@param {Mixed} identifier - identificador a ser usado como referência.
 	@return {Mixed} índice no array, ou undefined se não encontrado.
 */
-function objectInArray(vlr,_array,identifier) {
+nm.objectInArray = function(vlr,_array,identifier) {
 	var cont = 0,
 		size = _array.length;
 	for (; cont < size; cont++) {
@@ -30,7 +66,7 @@ function objectInArray(vlr,_array,identifier) {
 	@param {String} word - palavra a ser convertida.
 	@return  {Array} 
 */
-function strToArray(word) { return word.split(""); }
+nm.strToArray = function(word) { return word.split(""); }
 //<=======================================>
 
 
@@ -40,14 +76,14 @@ function strToArray(word) { return word.split(""); }
 	@param {Array Object} _array - conjunto para ser pesquisado.
 	@param {String} identifier - registro
 */
-function arrayUnique(_array,identifier) {
+nm.arrayUnique = function(_array,identifier) {
     var new_array = [],
         cont = 0,
         exist_in_array = false;
         size = _array.length;
 
     for (; cont < size; cont++) {      
-        exist_in_array = hasObject(new_array,_array[cont],identifier);
+        exist_in_array = nm.hasObject(new_array,_array[cont],identifier);
         if (exist_in_array === false) {
             new_array.push(_array[cont]);
         }
@@ -62,7 +98,7 @@ function arrayUnique(_array,identifier) {
 	@param {String} identifier - campo para verificação.
 	@return {Boolean}
 */
-function hasObject(collection,obj,identifier) {
+nm.hasObject =  function (collection,obj,identifier) {
     var size = collection.length,
         cont = 0;
     
@@ -82,7 +118,7 @@ function hasObject(collection,obj,identifier) {
 	@param {Array Object} conj2 - segundo conjunto a ser pesquisado.
 	@param {String} identifier - campo usado como identificador.
 */
-function equalSet(conj1,conj2,identifier) {
+nm.equalSet = function equalSet(conj1,conj2,identifier) {
     var size = conj1.length,
         conj_elm,
         exists_in_array = false;
@@ -93,7 +129,7 @@ function equalSet(conj1,conj2,identifier) {
     } else {
         for (; cont < size; cont++) {
             conj_elm  = conj1[cont];
-            exists_in_array = hasObject(conj2,conj_elm,identifier);
+            exists_in_array = nm.hasObject(conj2,conj_elm,identifier);
             if (exists_in_array === false) {
                 return false;
             }
@@ -108,7 +144,7 @@ Verifica se em uma coleção de objetos, pelo menos um deles, tem uma propriedade 
 @param {String} property - propriedade a ser pesquisada.
 @return {Boolean}
 */
-function collectionHasProperty(collection,property) {
+nm.collectionHasProperty = function (collection,property) {
     var cont = 0,
         size = collection.length;
     
@@ -127,7 +163,7 @@ function collectionHasProperty(collection,property) {
 	@param {String} property - nome da propriedade a ser pesquisada.
 	@return {Boolean}
 */
-function hasProperty(obj,property) {
+nm.hasProperty = function (obj,property) {
     if (obj.hasOwnProperty(property)) {
         return true;
     }
@@ -137,10 +173,12 @@ function hasProperty(obj,property) {
 /**
 	Remove elemento de um array.
 */
-function arrayRemove(arr,elm) {
+nm.arrayRemove =  function (arr,elm) {
     var index = $.inArray(elm,arr);
     if (index !== -1) {
         return arr.slice(0,index).concat(arr.slice(index + 1));
     } 
     return false;
 }
+
+})(APP);
