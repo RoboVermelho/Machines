@@ -7,7 +7,7 @@
 			if (config.constructor.name = "Object") {
 				this.end_signal = config.end_signal;
 				this.epson_signal = config.epson_signal;
-				this.property_identifier = config.identifier;
+				this.identifier = config.identifier;
 			}
 		}
 	}
@@ -15,7 +15,7 @@
 
 	nm.AfndeTest.prototype.eclose = function(state) {
 		var state_list = [],
-			ident = this.property_identifier,
+			ident = this.identifier,
 			epson=  this.epson_signal,
 			exist_in_list = false;
 		
@@ -51,7 +51,7 @@
 			apply_func_list = [],
 			cont = 0,
 			eclose = this.eclose,
-			identifier = this.property_identifier,
+			identifier = this.identifier,
 			e_close_result_list = [],
 			end_signal = this.end_signal,
 			size = state_list.length;

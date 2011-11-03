@@ -319,11 +319,11 @@
 					var tipo_maquina = tools.MachineTypeChecker();//Fim de desenhando máquina.
 					if (tipo_maquina === 'Afnd') { //Habilitar conversão.
 						$("input[name=converter_afnd_afd]").show().removeAttr('disabled');
-						$("input[name=converter_afnde_afnd]").show().attr('disabled','disabled');
+						$("input[name=converter_afnde_afnd]").hide().attr('disabled','disabled');
 						
 					}
 					 else if (tipo_maquina === 'Afnde') {
-						$("input[name=converter_afnd_afd]").show().attr('disabled','disabled');
+						$("input[name=converter_afnd_afd]").hide().attr('disabled','disabled');
 						$("input[name=converter_afnde_afnd]").show().removeAttr('disabled');
 					} 
 					else {

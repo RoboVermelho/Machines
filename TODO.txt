@@ -2,6 +2,6 @@ TODO:
 	* Pacotes de testes
 	* Melhorar interface gráfica -> fazendo.
 	* Criar o remover estado [estado/função]
-	* Deixar o código dentro dos namespaces.
+	* Deixar o código dentro dos namespaces. -> ok
 	
 	
